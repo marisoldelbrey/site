@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://marisoldelbrey.com/sitemap-index.xml

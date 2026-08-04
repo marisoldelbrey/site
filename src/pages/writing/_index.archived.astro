@@ -1,0 +1,89 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import FormattedDate from '../../components/FormattedDate.astro';
+
+// Pull every post, hide drafts, newest first.
+const posts = (await getCollection('writing', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<BaseLayout
+  title="Writing"
+  description="Placeholder description for the Writing page. Replace with one line about what I write about here."
+>
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Writing</p>
+      <h1>Placeholder heading</h1>
+      <div class="prose placeholder">
+        <span class="placeholder-tag">Placeholder copy</span>
+        <p>[Placeholder: one sentence on what I write about and how often.]</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section post-list-section">
+    <div class="wrap">
+      {
+        posts.length === 0 ? (
+          <p>No posts yet.</p>
+        ) : (
+          <ul class="post-list">
+            {posts.map((post) => (
+              <li class="post-list__item">
+                <FormattedDate date={post.data.pubDate} />
+                <h2>
+                  <a href={`/writing/${post.id}/`}>{post.data.title}</a>
+                </h2>
+                <p class="post-list__summary">{post.data.description}</p>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .post-list-section {
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .post-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-width: var(--measure);
+  }
+
+  .post-list__item {
+    padding-block: 1.75rem;
+    border-bottom: 1px solid var(--color-rule);
+  }
+
+  .post-list__item:first-child {
+    padding-top: 0;
+  }
+
+  .post-list__item h2 {
+    font-size: var(--size-h3);
+    margin: 0.4rem 0 0.5rem;
+  }
+
+  .post-list__item h2 a {
+    text-decoration: none;
+  }
+
+  .post-list__item h2 a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+  }
+
+  .post-list__summary {
+    margin: 0;
+    color: var(--color-warm-grey);
+  }
+</style>

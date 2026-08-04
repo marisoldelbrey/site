@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1100" role="img" aria-label="Placeholder image">
+  <rect width="900" height="1100" fill="#EFE9E0"/>
+  <g stroke="#8C8579" stroke-width="2" opacity="0.45">
+    <line x1="0" y1="0" x2="900" y2="1100"/>
+    <line x1="900" y1="0" x2="0" y2="1100"/>
+    <rect x="1" y="1" width="898" height="1098" fill="none"/>
+  </g>
+  <rect x="250" y="500" width="400" height="100" fill="#F6F2EC"/>
+  <text x="450" y="545" font-family="Georgia, 'Times New Roman', serif"
+        font-size="30" text-anchor="middle" fill="#B4763B"
+        letter-spacing="3">PLACEHOLDER</text>
+  <text x="450" y="580" font-family="Inter, Segoe UI, sans-serif"
+        font-size="19" text-anchor="middle" fill="#8C8579">
+    Replace with a real hero image
+  </text>
+</svg>

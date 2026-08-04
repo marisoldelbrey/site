@@ -1,0 +1,162 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="About"
+  description="PMO Lead and automation developer at a professional services firm, working where operations, reporting, and technology meet."
+>
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">About</p>
+      <h1>
+        I build the infrastructure that makes a professional services firm run.
+      </h1>
+
+      <div class="about__intro">
+        <figure class="about__portrait">
+          <img
+            src="/images/marisol.jpg"
+            alt="Marisol Delbrey"
+            width="1024"
+            height="1280"
+          />
+        </figure>
+
+        <div class="prose stack">
+          <p>
+            I'm a PMO Lead and automation developer at a professional services
+            firm. My work sits at the intersection of operations, reporting, and
+            technology: connecting systems that weren't designed to talk to each
+            other, automating processes that run on manual effort, and building
+            the data layer that makes both possible.
+          </p>
+
+          <p>
+            I came up through <a href="https://breakthroughtech.org"
+              >Breakthrough Tech AI</a
+            >, a competitive fellowship at UCLA, where I did a case competition
+            with Accenture and earned a machine learning certification from
+            Cornell University. Accenture is where I figured out what I actually
+            wanted to do: not technology for its own sake, and not operations
+            without the technical depth to change them. The combination is what
+            drives the work.
+          </p>
+
+          <p>
+            Right now I'm building an API connection between our practice
+            management system and our collections hub, consolidating billing data
+            into a Snowflake layer so reports stop being one-off exports and
+            start being a live data product. I'm automating client intake so a
+            sold opportunity flows from CRM into the practice management system
+            without anyone rekeying it. I'm building an AI chatbot for the firm's
+            website and a separate internal one for HR. I'm automating monthly
+            balanced scorecards for the full staff. Most of these projects
+            started because two systems weren't talking to each other and nobody
+            had connected the dots yet. That's usually where I start.
+          </p>
+
+          <p>
+            The firms I work in run on trust: with clients, with regulators, with
+            each other. Automation in that environment has to be reliable,
+            auditable, and built with the constraints in mind, not around them. I
+            build things that actually run inside real organizations with real
+            compliance requirements. That is harder than a demo and more useful
+            than a framework.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section about-details">
+    <div class="wrap grid grid--2">
+      <div>
+        <h2 class="eyebrow">Focus areas</h2>
+        <ul class="plain-list">
+          <li>Project Management Office</li>
+          <li>Workflow Automation</li>
+          <li>AI Implementation</li>
+          <li>Data Reporting and Operations</li>
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="eyebrow">Background</h2>
+        <ul class="plain-list">
+          <li>PMO Lead, Professional Services Firm, 2025 to present</li>
+          <li>Strategy and Technology Intern, Accenture</li>
+          <li>
+            PMP Candidate (exam target September 2026); Machine Learning
+            Certification, Cornell University
+          </li>
+          <li>B.A. Philosophy, Computer Science Minor, Chapman University</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section about-cta">
+    <div class="wrap">
+      <p class="lead">
+        If you're working on something at this intersection, I'd like to hear
+        about it.
+      </p>
+      <a class="button button--accent" href="/contact/">Get in touch</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Portrait sits under the heading on phones and beside the copy on desktop.
+     It is first in the DOM so it stays next to the heading when stacked. */
+  .about__intro {
+    display: grid;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    align-items: start;
+  }
+
+  @media (min-width: 52rem) {
+    .about__intro {
+      grid-template-columns: 1fr 0.6fr;
+    }
+
+    .about__portrait {
+      grid-column: 2;
+      grid-row: 1;
+    }
+  }
+
+  .about__portrait {
+    margin: 0;
+  }
+
+  /* Landscape source cropped to portrait; matches the hero framing. */
+  .about__portrait img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: 47% 35%;
+    border-radius: 2px;
+  }
+
+  .about-details,
+  .about-cta {
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .plain-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .plain-list li {
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--color-rule);
+  }
+
+  .about-cta .lead {
+    margin-bottom: 1.75rem;
+  }
+</style>

@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// This page is a holding state. The post-listing markup it replaced is kept at
+// src/pages/writing/_index.archived.astro (the underscore keeps it out of
+// routing).
+---
+
+<BaseLayout
+  title="Writing"
+  description="Notes on the work. This section of the site is in progress."
+>
+  <section class="coming-soon">
+    <div class="wrap">
+      <h1>Coming soon.</h1>
+      <p>This section is in progress. Check back shortly.</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Generous top padding so the message sits in the upper third of the
+     viewport rather than jammed under the header. */
+  .coming-soon {
+    padding-block: clamp(5rem, 16vh, 10rem) var(--space-section);
+    text-align: center;
+  }
+
+  .coming-soon h1 {
+    font-family: var(--font-display);
+    color: var(--color-ink);
+    margin-bottom: 1rem;
+  }
+
+  .coming-soon p {
+    font-family: var(--font-body);
+    font-size: var(--size-lead);
+    color: var(--color-ink);
+    max-width: 32ch;
+    margin-inline: auto;
+    margin-bottom: 0;
+  }
+</style>

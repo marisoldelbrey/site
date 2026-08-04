@@ -1,0 +1,151 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// PLACEHOLDER CONTENT ------------------------------------------------------
+// Four sample entries with the shape of a real case note. Fill in or delete.
+// Keep the pattern: what the situation was, what I built, what changed.
+const projects = [
+  {
+    label: 'Engagement one',
+    title: '[Placeholder: what I built, in five words]',
+    situation: '[Placeholder: what was happening before I started.]',
+    built: '[Placeholder: what I actually built or changed.]',
+    result: '[Placeholder: what changed, with a number if you have one.]',
+  },
+  {
+    label: 'Engagement two',
+    title: '[Placeholder: what I built, in five words]',
+    situation: '[Placeholder: what was happening before I started.]',
+    built: '[Placeholder: what I actually built or changed.]',
+    result: '[Placeholder: what changed, with a number if you have one.]',
+  },
+  {
+    label: 'Engagement three',
+    title: '[Placeholder: what I built, in five words]',
+    situation: '[Placeholder: what was happening before I started.]',
+    built: '[Placeholder: what I actually built or changed.]',
+    result: '[Placeholder: what changed, with a number if you have one.]',
+  },
+  {
+    label: 'Engagement four',
+    title: '[Placeholder: what I built, in five words]',
+    situation: '[Placeholder: what was happening before I started.]',
+    built: '[Placeholder: what I actually built or changed.]',
+    result: '[Placeholder: what changed, with a number if you have one.]',
+  },
+];
+---
+
+<BaseLayout
+  title="Work"
+  description="Placeholder description for the Work page. Replace with one line about the kind of engagements listed here."
+>
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Work</p>
+      <h1>Placeholder heading</h1>
+      <div class="prose placeholder">
+        <span class="placeholder-tag">Placeholder copy</span>
+        <p>
+          [Placeholder: one short paragraph on the kind of work listed below and
+          how to read it.]
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section work-list">
+    <div class="wrap">
+      <ol class="work-list__items">
+        {
+          projects.map((project) => (
+            <li class="work-item">
+              <p class="eyebrow">{project.label}</p>
+              <h2>{project.title}</h2>
+              <div class="placeholder work-item__body">
+                <span class="placeholder-tag">Placeholder copy</span>
+                <dl>
+                  <dt>Situation</dt>
+                  <dd>{project.situation}</dd>
+                  <dt>What I built</dt>
+                  <dd>{project.built}</dd>
+                  <dt>Result</dt>
+                  <dd>{project.result}</dd>
+                </dl>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section work-cta">
+    <div class="wrap">
+      <p class="lead">Want the longer version of any of these?</p>
+      <a class="button button--accent" href="/contact/">Ask me about it</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .work-list,
+  .work-cta {
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .work-list__items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: clamp(2.5rem, 6vw, 4rem);
+  }
+
+  .work-item {
+    padding-bottom: clamp(2.5rem, 6vw, 4rem);
+    border-bottom: 1px solid var(--color-rule);
+  }
+
+  .work-item:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .work-item h2 {
+    max-width: 24ch;
+  }
+
+  .work-item__body {
+    max-width: var(--measure);
+  }
+
+  .work-item dl {
+    margin: 0;
+    display: grid;
+    gap: 0.35rem 1.5rem;
+  }
+
+  @media (min-width: 40rem) {
+    .work-item dl {
+      grid-template-columns: 9rem 1fr;
+    }
+  }
+
+  .work-item dt {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-warm-grey);
+    padding-top: 0.25em;
+  }
+
+  .work-item dd {
+    margin: 0 0 0.75rem;
+  }
+
+  .work-cta .lead {
+    margin-bottom: 1.75rem;
+  }
+</style>

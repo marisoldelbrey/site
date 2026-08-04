@@ -1,0 +1,225 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+
+const pillars = [
+  {
+    title: 'PMO in practice',
+    body: "I stood up the PMO function at the firm from scratch: project charters, a weekly cadence with the COO, and a balanced scorecard process covering every Tax and Legal staff member. The work doesn't just track projects, it creates the structure that lets the firm decide what to build next and whether it worked.",
+  },
+  {
+    title: 'Applied automation',
+    body: "I own the firm's Power Automate flows: CRM reporting, collections reminders, stale lead follow-up, and BSC data pulls. The builds are rarely clean because the underlying systems weren't designed to connect. Most of the work is figuring out where the data breaks and building around it, whether that's a Snowflake query that was silently dropping 279 invoices or an Outlook connector that couldn't handle a shared mailbox.",
+  },
+  {
+    title: 'AI governance and adoption',
+    body: "I'm the firm's AI champion: I work with departments across the firm to identify where AI can reduce manual work, then take those initiatives from idea to production. In an accounting and legal environment, that means navigating compliance constraints, getting skeptical professionals to trust the tools, and building guardrails that make adoption possible rather than just policy-compliant.",
+  },
+];
+
+const proofPoints = [
+  'Built a firmwide AI usage policy with data tiering and an approved-workflow registry',
+  'Designed and deployed an AR collections automation and reporting layer end to end',
+  'Reconfigured recurring work schedules at scale across a firmwide practice management system',
+  'Owns monthly KPI and scorecard reporting for two departments',
+  'PMP candidate, September 2026',
+];
+---
+
+<BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+  <!-- Hero -->
+  <section class="section hero">
+    <div class="wrap hero__inner">
+      <div class="hero__text">
+        <h1 class="hero__line">
+          I build the operating systems behind professional services firms,
+          combining PMO discipline with automation and AI that people actually
+          use.
+        </h1>
+
+        <div class="hero__actions">
+          <a class="button button--accent" href="/work/">See the work</a>
+          <a class="button" href="/contact/">Get in touch</a>
+        </div>
+      </div>
+
+      <figure class="hero__figure">
+        <img
+          src="/images/marisol.jpg"
+          alt="Marisol Delbrey"
+          width="1024"
+          height="1280"
+          fetchpriority="high"
+        />
+      </figure>
+    </div>
+  </section>
+
+  <!-- Three pillars -->
+  <section class="section pillars">
+    <div class="wrap">
+      <h2 class="eyebrow" id="pillars-heading">What I do</h2>
+      <div class="grid grid--3" role="list" aria-labelledby="pillars-heading">
+        {
+          pillars.map((pillar) => (
+            <article class="pillar" role="listitem">
+              <h3>{pillar.title}</h3>
+              <p>{pillar.body}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Proof points -->
+  <section class="section proof">
+    <div class="wrap">
+      <h2 class="eyebrow">Proof points</h2>
+      <ul class="proof__list">
+        {proofPoints.map((point) => <li>{point}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Links out -->
+  <section class="section next">
+    <div class="wrap grid grid--2">
+      <a class="next__card" href="/writing/">
+        <h2>Writing</h2>
+        <p>Notes on the work, published as I go.</p>
+        <span class="next__cue" aria-hidden="true">Read the writing</span>
+      </a>
+      <a class="next__card" href="/contact/">
+        <h2>Contact</h2>
+        <p>Tell me what you are trying to fix.</p>
+        <span class="next__cue" aria-hidden="true">Start a conversation</span>
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Hero: single column on phones, text and image side by side on desktop. */
+  .hero__inner {
+    display: grid;
+    gap: clamp(2rem, 5vw, 3.5rem);
+    align-items: center;
+  }
+
+  @media (min-width: 52rem) {
+    .hero__inner {
+      grid-template-columns: 1.15fr 0.85fr;
+    }
+  }
+
+  .hero__line {
+    font-size: clamp(1.75rem, 1.15rem + 2.4vw, 3rem);
+    font-weight: 400;
+    line-height: 1.22;
+    letter-spacing: -0.015em;
+    max-width: 22ch;
+    margin-bottom: 2rem;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .hero__figure {
+    margin: 0;
+  }
+
+  /* The source photo is landscape (1920x1280), so the portrait slot crops the
+     sides. object-position keeps the subject in frame at every width. */
+  .hero__figure img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: 47% 35%;
+    border-radius: 2px;
+  }
+
+  /* Pillars */
+  .pillars {
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .pillar h3 {
+    margin-bottom: 0.75rem;
+  }
+
+  .pillar p {
+    margin-bottom: 0;
+    color: var(--color-ink);
+  }
+
+  /* Proof points */
+  .proof {
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .proof__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-width: var(--measure);
+  }
+
+  .proof__list li {
+    padding: 0.9rem 0 0.9rem 1.75rem;
+    border-bottom: 1px solid var(--color-rule);
+    position: relative;
+  }
+
+  .proof__list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 1.5em;
+    width: 0.6rem;
+    height: 1px;
+    background: var(--color-accent);
+  }
+
+  /* Links out */
+  .next {
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .next__card {
+    display: block;
+    text-decoration: none;
+    background: var(--color-surface);
+    border: 1px solid var(--color-rule);
+    border-radius: 2px;
+    padding: clamp(1.5rem, 4vw, 2.25rem);
+    transition: border-color 0.18s ease, transform 0.18s ease;
+  }
+
+  .next__card:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+    color: inherit;
+  }
+
+  .next__card h2 {
+    font-size: var(--size-h3);
+    margin-bottom: 0.4rem;
+  }
+
+  .next__card p {
+    color: var(--color-warm-grey);
+    margin-bottom: 1rem;
+  }
+
+  .next__cue {
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+</style>

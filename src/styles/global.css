@@ -1,0 +1,272 @@
+/* ---------------------------------------------------------------------------
+   Design tokens
+   Change a value here and it updates everywhere on the site.
+--------------------------------------------------------------------------- */
+:root {
+  /* Palette */
+  --color-base: #f6f2ec;
+  --color-ink: #16202e;
+  --color-accent: #b4763b;
+  --color-warm-grey: #8c8579;
+
+  /* Derived tints, built from the palette above */
+  --color-rule: rgba(140, 133, 121, 0.28);
+  --color-surface: #fffdfa;
+  --color-accent-soft: rgba(180, 118, 59, 0.1);
+
+  /* Type */
+  --font-display: 'Fraunces Variable', 'Fraunces', Georgia, 'Times New Roman',
+    serif;
+  --font-body: 'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, sans-serif;
+
+  --text-base: 17px;
+  --leading-body: 1.6;
+
+  /* Fluid heading sizes: shrink on phones, grow on desktop, no media query. */
+  --size-h1: clamp(2.25rem, 1.6rem + 3.2vw, 4rem);
+  --size-h2: clamp(1.6rem, 1.35rem + 1.2vw, 2.25rem);
+  --size-h3: clamp(1.2rem, 1.1rem + 0.5vw, 1.45rem);
+  --size-lead: clamp(1.2rem, 1.05rem + 0.8vw, 1.6rem);
+
+  /* Layout */
+  --measure: 68ch; /* comfortable reading width */
+  --width-page: 68rem;
+  --gutter: clamp(1.25rem, 5vw, 3rem);
+  --space-section: clamp(3.5rem, 8vw, 6.5rem);
+}
+
+/* ---------------------------------------------------------------------------
+   Reset and base elements
+--------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-base);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  margin: 0 0 0.5em;
+}
+
+h1 {
+  font-size: var(--size-h1);
+}
+h2 {
+  font-size: var(--size-h2);
+}
+h3 {
+  font-size: var(--size-h3);
+}
+
+p,
+ul,
+ol {
+  margin: 0 0 1.15em;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+  text-decoration-color: var(--color-accent);
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+a:hover {
+  color: var(--color-accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--color-rule);
+  margin: var(--space-section) 0;
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, 'Cascadia Mono', Consolas,
+    monospace;
+  font-size: 0.9em;
+  background: var(--color-accent-soft);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+}
+
+/* ---------------------------------------------------------------------------
+   Layout helpers
+--------------------------------------------------------------------------- */
+.wrap {
+  width: 100%;
+  max-width: var(--width-page);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.prose {
+  max-width: var(--measure);
+}
+
+.section {
+  padding-block: var(--space-section);
+}
+
+.stack > * + * {
+  margin-top: 1.15em;
+}
+
+/* Skip link for keyboard and screen reader users */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--color-ink);
+  color: var(--color-base);
+  padding: 0.75rem 1rem;
+  z-index: 100;
+}
+.skip-link:focus {
+  left: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   Shared components
+--------------------------------------------------------------------------- */
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-warm-grey);
+  margin: 0 0 1rem;
+}
+
+.lead {
+  font-size: var(--size-lead);
+  line-height: 1.4;
+  font-family: var(--font-display);
+  font-weight: 400;
+  max-width: 28ch;
+}
+
+.button {
+  display: inline-block;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  padding: 0.7rem 1.35rem;
+  border: 1px solid var(--color-ink);
+  border-radius: 2px;
+  text-decoration: none;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.button:hover {
+  background: var(--color-ink);
+  color: var(--color-base);
+}
+
+.button--accent {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-base);
+}
+
+.button--accent:hover {
+  background: transparent;
+  color: var(--color-accent);
+}
+
+/* Simple responsive grid used by the pillar blocks and the work list. */
+.grid {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 2.5rem);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 46rem) {
+  .grid--3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .grid--2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Placeholder marking
+   Every block of draft copy on this site is wrapped in .placeholder so it is
+   obvious at a glance what still needs to be written. Delete the class (and
+   the .placeholder rules below) once the real copy is in.
+--------------------------------------------------------------------------- */
+.placeholder {
+  position: relative;
+  border-left: 2px dashed var(--color-accent);
+  padding-left: 1rem;
+}
+
+.placeholder-tag {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+  padding: 0.2rem 0.5rem;
+  border-radius: 2px;
+  margin-bottom: 0.75rem;
+}

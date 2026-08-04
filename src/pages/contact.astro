@@ -1,0 +1,245 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const EMAIL = 'hello@marisoldelbrey.com';
+
+const links = [
+  {
+    label: 'LinkedIn',
+    href: 'https://www.linkedin.com/in/marisoldelbrey',
+    note: 'LinkedIn',
+  },
+  { label: 'Email', href: `mailto:${EMAIL}`, note: EMAIL },
+];
+---
+
+<BaseLayout
+  title="Contact"
+  description="Get in touch about operations, automation, and AI in professional services."
+>
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Contact</p>
+      <h1>Let's talk.</h1>
+
+      <div class="prose stack">
+        <p>
+          I'm always open to conversations about operations, automation, and AI
+          in professional services. If you're working on something at this
+          intersection or just want to connect, reach out.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section contact-form-section">
+    <div class="wrap">
+      <h2 class="eyebrow">Send a message</h2>
+
+      <form class="contact-form" id="contact-form">
+        <div class="field">
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" required autocomplete="name" />
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            autocomplete="email"
+          />
+        </div>
+
+        <div class="field">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="6" required></textarea>
+        </div>
+
+        <button class="button button--accent" type="submit" data-submit>
+          Send message
+        </button>
+
+        <p class="form-error" data-error hidden>
+          Something went wrong sending that. Email me directly at <a
+            href={`mailto:${EMAIL}`}>{EMAIL}</a
+          >.
+        </p>
+      </form>
+
+      <p class="form-thanks" id="contact-thanks" role="status" tabindex="-1" hidden>
+        Got it. I'll be in touch.
+      </p>
+    </div>
+  </section>
+
+  <section class="section contact-methods">
+    <div class="wrap">
+      <h2 class="eyebrow">Where to find me</h2>
+      <ul class="contact-list">
+        {
+          links.map((link) => (
+            <li>
+              <span class="contact-list__label">{link.label}</span>
+              <a class="contact-list__value" href={link.href}>
+                {link.note}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  // Submit to Formspree with fetch so the page never reloads. The <form> tag is
+  // kept for native required/email validation and keyboard submit; the default
+  // navigation is cancelled below.
+  const ENDPOINT = 'https://formspree.io/f/mdennvnn';
+
+  const form = document.querySelector<HTMLFormElement>('#contact-form');
+  const thanks = document.querySelector<HTMLElement>('#contact-thanks');
+  const button = form?.querySelector<HTMLButtonElement>('[data-submit]');
+  const error = form?.querySelector<HTMLElement>('[data-error]');
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    // Let the browser show its own messages if a required field is empty.
+    if (!form.reportValidity()) return;
+
+    if (!button || !thanks || !error) return;
+
+    error.hidden = true;
+    button.disabled = true;
+    const label = button.textContent;
+    button.textContent = 'Sending...';
+
+    try {
+      const response = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: new FormData(form),
+      });
+
+      if (!response.ok) throw new Error(`Formspree returned ${response.status}`);
+
+      // Swap the form out for the confirmation and move focus to it so screen
+      // reader and keyboard users land on the new content.
+      form.hidden = true;
+      thanks.hidden = false;
+      thanks.focus();
+    } catch (err) {
+      console.error(err);
+      error.hidden = false;
+      button.disabled = false;
+      button.textContent = label;
+    }
+  });
+</script>
+
+<style>
+  .contact-form-section,
+  .contact-methods {
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .contact-form {
+    max-width: 34rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-rule);
+    border-radius: 2px;
+    padding: clamp(1.5rem, 4vw, 2.25rem);
+  }
+
+  .field {
+    margin-bottom: 1.25rem;
+  }
+
+  .field label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-warm-grey);
+    margin-bottom: 0.4rem;
+  }
+
+  /* font: inherit because form controls do not inherit type by default. */
+  .field input,
+  .field textarea {
+    font: inherit;
+    color: var(--color-ink);
+    width: 100%;
+    background: var(--color-base);
+    border: 1px solid var(--color-warm-grey);
+    border-radius: 2px;
+    padding: 0.6rem 0.7rem;
+  }
+
+  .field textarea {
+    resize: vertical;
+  }
+
+  .field input:focus-visible,
+  .field textarea:focus-visible {
+    border-color: var(--color-accent);
+  }
+
+  .contact-form button {
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .contact-form button:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  .form-error {
+    margin: 1rem 0 0;
+    font-size: 0.9rem;
+    color: var(--color-accent);
+  }
+
+  .form-thanks {
+    font-size: var(--size-lead);
+    font-family: var(--font-display);
+    margin: 0;
+  }
+
+  .contact-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-width: var(--measure);
+  }
+
+  .contact-list li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.5rem;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--color-rule);
+  }
+
+  .contact-list__label {
+    flex: 0 0 7rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-warm-grey);
+    padding-top: 0.35em;
+  }
+
+  .contact-list__value {
+    font-size: 1.05rem;
+  }
+</style>
