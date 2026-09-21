@@ -263,7 +263,14 @@ const isCurrent = (href: string) =>
     display: block;
   }
 
-  /* On narrow screens the nav wraps to its own line under the wordmark. */
+  /* On narrow screens the nav moves to its own line under the wordmark.
+
+     The tighter gap and icon padding here are what actually let the four
+     links and the three icons share that line. At the desktop rhythm the row
+     needs about 367px, while a 390px phone only offers about 350px inside the
+     gutters, so the icons were being pushed to a second row. Trimming the
+     column gap and the icon padding brings it to about 314px, which fits from
+     roughly 360px up. Below that it still wraps, by design. */
   @media (max-width: 34rem) {
     .site-header__inner {
       flex-direction: column;
@@ -271,6 +278,17 @@ const isCurrent = (href: string) =>
     }
     .wordmark {
       letter-spacing: 0.16em;
+    }
+    .nav {
+      gap: 0.4rem 0.9rem;
+    }
+    .icon-link,
+    #theme-toggle {
+      padding: 0.3rem 0.15rem;
+    }
+    .header-icons {
+      gap: 0.15rem;
+      margin-inline-start: -0.15rem;
     }
   }
 </style>
