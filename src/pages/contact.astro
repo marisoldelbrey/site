@@ -1,12 +1,13 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { SOCIAL_LINKS } from '../consts';
 
 const EMAIL = 'hello@marisoldelbrey.com';
 
 const links = [
   {
     label: 'LinkedIn',
-    href: 'https://www.linkedin.com/in/marisoldelbrey',
+    href: SOCIAL_LINKS.linkedin,
     note: 'LinkedIn',
   },
   { label: 'Email', href: `mailto:${EMAIL}`, note: EMAIL },

@@ -12,6 +12,13 @@ export const SITE_DESCRIPTION =
 // PLACEHOLDER: replace og-default.png with a real 1200x630 image.
 export const OG_IMAGE = '/og-default.png';
 
+// Profile links shown as icons in the header and listed on the contact page.
+// This is the only place they are written down: change a handle here.
+export const SOCIAL_LINKS = {
+  github: 'https://github.com/marisoldelbrey',
+  linkedin: 'https://www.linkedin.com/in/marisoldelbrey',
+};
+
 export const NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/about/', label: 'About' },
