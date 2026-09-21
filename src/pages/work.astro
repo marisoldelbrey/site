@@ -1,42 +1,156 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-// This page is a holding state. The full case-note markup it replaced is kept
-// at src/pages/_work.archived.astro (the underscore keeps it out of routing).
+// The earlier "Situation / What I built / Result" case-note markup this page
+// replaced is kept at src/pages/_work.archived.astro (the underscore keeps it
+// out of routing).
+//
+// `status` picks the badge color (see .status-* in global.css); `label` is the
+// text shown in it. `stack` may be empty, in which case no stack line renders.
+const caseStudies = [
+  {
+    title: 'Collections Process Automation',
+    status: 'production',
+    label: 'Production',
+    description:
+      "Built an end-to-end AR automation pipeline pulling from the firm's data warehouse, plus a dashboard and automated reminder flows. Along the way, identified and resolved a significant invoice tracking gap caused by a silent data sync failure.",
+    stack: ['Python', 'Node', 'Power Automate', 'Supabase'],
+  },
+  {
+    title: 'Client Wiki',
+    status: 'progress',
+    label: 'In Progress · Piloting',
+    description:
+      "Designed a centralized client-data dashboard to support the firm's advisory work, currently piloting with top-tier clients ahead of a year-end rollout.",
+    stack: ['Supabase'],
+  },
+  {
+    title: 'Firm-Wide Intake & Ops Rollout',
+    status: 'progress',
+    label: 'In Progress',
+    description:
+      'Replaced a multi-handoff intake process with a form that writes directly into Karbon via API, creating a single automated path with a full audit trail. Currently extending the integration to write to the CRM simultaneously.',
+    stack: ['Karbon API', 'Dynamics 365', 'Power Automate'],
+  },
+  {
+    title: 'Automation & Reporting Flows',
+    status: 'production',
+    label: 'Production',
+    description:
+      'Built and maintain a set of recurring Power Automate flows spanning CRM reporting and the intake/API pipeline.',
+    stack: ['Power Automate', 'Dynamics 365', 'Karbon'],
+  },
+  {
+    title: 'Balanced Scorecard / KPI Program',
+    status: 'production',
+    label: 'Production · Ongoing',
+    description:
+      'Own monthly KPI and scorecard reporting across two departments; led a 12-month historical rollforward and built the reporting infrastructure from scratch.',
+    stack: [],
+  },
+];
 ---
 
 <BaseLayout
   title="Work"
-  description="Selected engagements. This section of the site is in progress."
+  description="Selected engagements in automation, reporting, and firm operations."
 >
-  <section class="coming-soon">
+  <section class="section">
     <div class="wrap">
-      <h1>Coming soon.</h1>
-      <p>This section is in progress. Check back shortly.</p>
+      <p class="eyebrow">Work</p>
+      <h1>Selected work.</h1>
+    </div>
+  </section>
+
+  <section class="section work-list">
+    <div class="wrap">
+      <ul class="grid grid--2 case-grid">
+        {
+          caseStudies.map((study) => (
+            <li class="case-card">
+              <div class="case-card__head">
+                <h2 class="case-card__title">{study.title}</h2>
+                <span class={`status-badge status-${study.status}`}>
+                  {study.label}
+                </span>
+              </div>
+
+              <p class="case-card__body">{study.description}</p>
+
+              {study.stack.length > 0 && (
+                <p class="case-card__stack">{study.stack.join(' · ')}</p>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section work-cta">
+    <div class="wrap">
+      <p class="lead">Want the longer version of any of these?</p>
+      <a class="button button--accent" href="/contact/">Ask me about it</a>
     </div>
   </section>
 </BaseLayout>
 
 <style>
-  /* Generous top padding so the message sits in the upper third of the
-     viewport rather than jammed under the header. */
-  .coming-soon {
-    padding-block: clamp(5rem, 16vh, 10rem) var(--space-section);
-    text-align: center;
+  .work-list,
+  .work-cta {
+    border-top: 1px solid var(--color-rule);
   }
 
-  .coming-soon h1 {
-    font-family: var(--font-display);
-    color: var(--color-ink);
-    margin-bottom: 1rem;
+  .case-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    align-items: start;
   }
 
-  .coming-soon p {
-    font-family: var(--font-body);
-    font-size: var(--size-lead);
-    color: var(--color-ink);
-    max-width: 32ch;
-    margin-inline: auto;
-    margin-bottom: 0;
+  /* Same surface treatment as the homepage .next__card. */
+  .case-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-rule);
+    border-radius: 2px;
+    padding: clamp(1.5rem, 4vw, 2.25rem);
+  }
+
+  /* Title and badge share a row; the badge drops below on very narrow cards. */
+  .case-card__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .case-card__title {
+    font-size: var(--size-h3);
+    margin: 0;
+    max-width: 22ch;
+  }
+
+  .case-card__body {
+    margin: 0;
+    color: var(--text);
+  }
+
+  /* Matches the small uppercase label idiom used by .eyebrow and the contact
+     list labels. */
+  .case-card__stack {
+    margin: 1.1rem 0 0;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--color-rule);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-warm-grey);
+  }
+
+  .work-cta .lead {
+    margin-bottom: 1.75rem;
   }
 </style>
