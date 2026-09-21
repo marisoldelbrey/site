@@ -104,6 +104,24 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
+/* Dark mode gets a faint grain plus a soft accent wash, so the near-black
+   background reads as a surface rather than a flat fill. Both layers are
+   CSS-only and sit on top of background-color, so there is no extra element
+   and nothing to stack against.
+
+   To dial the grain: change opacity='0.035' inside the data URI below.
+   To dial the wash: change the 7% in the color-mix on the radial. */
+[data-theme='dark'] body {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.035'/%3E%3C/svg%3E"),
+    radial-gradient(
+      1100px 520px at 50% -10%,
+      color-mix(in srgb, var(--accent) 7%, transparent),
+      transparent 70%
+    );
+  background-repeat: repeat, no-repeat;
+  background-attachment: fixed, fixed;
+}
+
 h1,
 h2,
 h3,

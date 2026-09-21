@@ -175,15 +175,36 @@ const isCurrent = (href: string) =>
   }
 
   .nav a {
+    position: relative;
     font-size: 0.95rem;
     text-decoration: none;
     padding-block: 0.25rem;
-    border-bottom: 1px solid transparent;
+  }
+
+  /* Underline wipes in from the left on hover. The current page renders with
+     scaleX(1) already applied, and transitions never run on a first paint, so
+     it snaps into place on load instead of animating. */
+  .nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.22s ease;
+  }
+
+  .nav a:hover::after,
+  .nav a:focus-visible::after,
+  .nav a[aria-current='page']::after {
+    transform: scaleX(1);
   }
 
   .nav a:hover,
   .nav a[aria-current='page'] {
-    border-bottom-color: var(--accent);
     color: var(--accent);
   }
 

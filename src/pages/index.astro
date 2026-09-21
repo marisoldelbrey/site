@@ -76,6 +76,7 @@ const formatStat = (s) =>
   <!-- Intro -->
   <section class="section intro">
     <div class="wrap">
+      <hr class="divider" />
       <p class="intro__copy">
         Reporting directly to the COO, I support C-suite leadership with
         reporting infrastructure, CRM and platform administration, and process
@@ -88,6 +89,7 @@ const formatStat = (s) =>
   <!-- Proof points -->
   <section class="section stats">
     <div class="wrap">
+      <hr class="divider" />
       <h2 class="eyebrow">Proof points</h2>
 
       <ul class="stats__list" data-stats>
@@ -185,22 +187,71 @@ const formatStat = (s) =>
 
   <!-- Links out -->
   <section class="section next">
-    <div class="wrap grid grid--2">
-      <a class="next__card" href="/writing/">
-        <h2>Writing</h2>
-        <p>Notes on the work, published as I go.</p>
-        <span class="next__cue" aria-hidden="true">Read the writing</span>
-      </a>
-      <a class="next__card" href="/contact/">
-        <h2>Contact</h2>
-        <p>Tell me what you are trying to fix.</p>
-        <span class="next__cue" aria-hidden="true">Start a conversation</span>
-      </a>
+    <div class="wrap">
+      <hr class="divider" />
+      <div class="grid grid--2">
+        <a class="next__card" href="/writing/">
+          <h2>Writing</h2>
+          <p>Notes on the work, published as I go.</p>
+          <span class="next__cue" aria-hidden="true">Read the writing</span>
+        </a>
+        <a class="next__card" href="/contact/">
+          <h2>Contact</h2>
+          <p>Tell me what you are trying to fix.</p>
+          <span class="next__cue" aria-hidden="true">Start a conversation</span>
+        </a>
+      </div>
     </div>
   </section>
 </BaseLayout>
 
 <style>
+  /* ---- Hero entrance -----------------------------------------------------
+     Above the fold, so this is a plain CSS animation rather than the observer
+     the stat strip uses. animation-fill-mode: both holds the start state
+     through the delay, so nothing flashes its final position first. */
+  @keyframes hero-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .hero__line,
+  .hero__subhead,
+  .hero__actions,
+  .hero__figure {
+    animation: hero-in 0.55s ease both;
+  }
+
+  .hero__line {
+    animation-delay: 0.05s;
+  }
+  .hero__subhead {
+    animation-delay: 0.17s;
+  }
+  .hero__actions {
+    animation-delay: 0.29s;
+  }
+  .hero__figure {
+    animation-delay: 0.41s;
+  }
+
+  /* The global reduced-motion rule only shortens durations, which would still
+     leave these hidden through their delay. Drop the animation outright. */
+  @media (prefers-reduced-motion: reduce) {
+    .hero__line,
+    .hero__subhead,
+    .hero__actions,
+    .hero__figure {
+      animation: none;
+    }
+  }
+
   /* Hero: single column on phones, text and image side by side on desktop. */
   .hero__inner {
     display: grid;
@@ -245,8 +296,24 @@ const formatStat = (s) =>
     gap: 0.75rem;
   }
 
+  /* --tint is the knob for the photo treatment: raise for a stronger accent
+     wash, set to 0 to turn it off entirely. soft-light keeps the photo's own
+     contrast intact and just pulls it toward the palette. */
   .hero__figure {
+    --tint: 0.18;
+    position: relative;
     margin: 0;
+  }
+
+  .hero__figure::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    mix-blend-mode: soft-light;
+    opacity: var(--tint);
+    border-radius: 2px;
+    pointer-events: none;
   }
 
   /* The source photo is landscape (1920x1280 = 3:2). The slot is 4:3, close
@@ -262,10 +329,18 @@ const formatStat = (s) =>
     border-radius: 2px;
   }
 
-  /* Intro: same display-face lead treatment as .lead, at a reading measure. */
-  .intro {
-    border-top: 1px solid var(--color-rule);
+  /* Section markers. These replace the full-width rules that used to separate
+     the homepage sections: a short accent dash, aligned to the text column
+     because it sits inside .wrap rather than on the section edge. */
+  .divider {
+    border: 0;
+    width: 2rem;
+    height: 2px;
+    background: var(--accent);
+    margin: 0 0 clamp(1.75rem, 3vw, 2.5rem);
   }
+
+  /* Intro: same display-face lead treatment as .lead, at a reading measure. */
 
   .intro__copy {
     font-family: var(--font-display);
@@ -277,10 +352,6 @@ const formatStat = (s) =>
   }
 
   /* Stat strip: one column on phones, two on tablets, four across on desktop. */
-  .stats {
-    border-top: 1px solid var(--color-rule);
-  }
-
   .stats__list {
     list-style: none;
     padding: 0;
@@ -380,10 +451,6 @@ const formatStat = (s) =>
   }
 
   /* Links out */
-  .next {
-    border-top: 1px solid var(--color-rule);
-  }
-
   .next__card {
     display: block;
     text-decoration: none;
