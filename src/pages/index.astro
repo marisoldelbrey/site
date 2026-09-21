@@ -32,10 +32,13 @@ const proofPoints = [
     <div class="wrap hero__inner">
       <div class="hero__text">
         <h1 class="hero__line">
-          I build the operating systems behind professional services firms,
-          combining PMO discipline with automation and AI that people actually
-          use.
+          I build the operating systems behind professional services firms.
         </h1>
+
+        <p class="hero__subhead">
+          Combining PMO discipline with automation and AI that people actually
+          use.
+        </p>
 
         <div class="hero__actions">
           <a class="button button--accent" href="/work/">See the work</a>
@@ -47,7 +50,7 @@ const proofPoints = [
         <img
           src="/images/marisol.jpg"
           alt="Marisol Delbrey"
-          width="1024"
+          width="1920"
           height="1280"
           fetchpriority="high"
         />
@@ -113,12 +116,28 @@ const proofPoints = [
     }
   }
 
+  /* Sized so the headline sits at three lines in the hero's text column at
+     desktop widths, and two on a phone. */
   .hero__line {
-    font-size: clamp(1.75rem, 1.15rem + 2.4vw, 3rem);
+    font-size: clamp(2rem, 4vw, 2.75rem);
     font-weight: 400;
     line-height: 1.22;
     letter-spacing: -0.015em;
-    max-width: 22ch;
+    max-width: 24ch;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Body face, regular weight, stepped back from the headline. Uses --text at
+     reduced opacity rather than --color-warm-grey so it keeps AA contrast in
+     both themes at this size. */
+  .hero__subhead {
+    font-family: var(--font-body);
+    font-size: var(--size-lead);
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--text);
+    opacity: 0.72;
+    max-width: 38ch;
     margin-bottom: 2rem;
   }
 
@@ -132,13 +151,16 @@ const proofPoints = [
     margin: 0;
   }
 
-  /* The source photo is landscape (1920x1280), so the portrait slot crops the
-     sides. object-position keeps the subject in frame at every width. */
+  /* The source photo is landscape (1920x1280 = 3:2). The slot is 4:3, close
+     enough that cover trims ~11% off the sides as a deliberate crop instead of
+     the ~47% the old 4:5 portrait slot was discarding. Keeping it near the
+     source ratio is also what pulls the CTAs back above the fold, since this
+     image is the tallest thing in the hero row. */
   .hero__figure img {
     width: 100%;
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 4 / 3;
     object-fit: cover;
-    object-position: 47% 35%;
+    object-position: 47% 40%;
     border-radius: 2px;
   }
 
