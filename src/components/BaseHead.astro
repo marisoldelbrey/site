@@ -36,13 +36,31 @@ const fullTitle = title === SITE_TITLE ? title : `${title} | ${SITE_TITLE}`;
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="generator" content={Astro.generator} />
 
+<!-- Declared above the script below so that script can keep it in sync.
+     Values mirror --bg in src/styles/global.css. -->
+<meta name="theme-color" content="#f6f2ec" data-theme-color />
+
+<!-- Runs before the stylesheet paints, so the saved theme is already on
+     <html> and there is no flash of the wrong theme on load. Kept inline and
+     un-bundled (is:inline) for exactly that reason. -->
+<script is:inline>
+  const theme =
+    localStorage.getItem('theme') ||
+    (window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light');
+  document.documentElement.setAttribute('data-theme', theme);
+  document
+    .querySelector('[data-theme-color]')
+    ?.setAttribute('content', theme === 'dark' ? '#0d0d0c' : '#f6f2ec');
+</script>
+
 <title>{fullTitle}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonicalURL} />
 
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 <link rel="sitemap" href="/sitemap-index.xml" />
-<meta name="theme-color" content="#F6F2EC" />
 
 <!-- Open Graph (Facebook, LinkedIn, Slack, iMessage) -->
 <meta property="og:type" content={type} />

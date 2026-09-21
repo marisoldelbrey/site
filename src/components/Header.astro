@@ -11,24 +11,45 @@ const isCurrent = (href: string) =>
   <div class="wrap site-header__inner">
     <a class="wordmark" href="/">{SITE_TITLE_DISPLAY}</a>
 
-    <nav aria-label="Main">
-      <ul class="nav">
-        {
-          NAV_LINKS.filter((link) => link.href !== '/').map((link) => (
-            <li>
-              <a
-                href={link.href}
-                aria-current={isCurrent(link.href) ? 'page' : undefined}
-              >
-                {link.label}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </nav>
+    <div class="site-header__end">
+      <nav aria-label="Main">
+        <ul class="nav">
+          {
+            NAV_LINKS.filter((link) => link.href !== '/').map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  aria-current={isCurrent(link.href) ? 'page' : undefined}
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      {/* Both icons ship in the HTML and CSS shows the right one for the
+          current data-theme, so the button never flashes the wrong glyph. */}
+      <button id="theme-toggle" type="button" aria-label="Toggle theme">
+        <span class="theme-toggle__icon theme-toggle__icon--light" aria-hidden="true">🌙</span>
+        <span class="theme-toggle__icon theme-toggle__icon--dark" aria-hidden="true">☀️</span>
+      </button>
+    </div>
   </div>
 </header>
+
+<script is:inline>
+  document.getElementById('theme-toggle')?.addEventListener('click', () => {
+    const html = document.documentElement;
+    const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    document
+      .querySelector('[data-theme-color]')
+      ?.setAttribute('content', next === 'dark' ? '#0d0d0c' : '#f6f2ec');
+  });
+</script>
 
 <style>
   .site-header {
@@ -56,7 +77,15 @@ const isCurrent = (href: string) =>
   }
 
   .wordmark:hover {
-    color: var(--color-accent);
+    color: var(--accent);
+  }
+
+  /* Nav and theme toggle share the right-hand side of the header. */
+  .site-header__end {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.4rem 1.5rem;
   }
 
   .nav {
@@ -77,8 +106,37 @@ const isCurrent = (href: string) =>
 
   .nav a:hover,
   .nav a[aria-current='page'] {
-    border-bottom-color: var(--color-accent);
-    color: var(--color-accent);
+    border-bottom-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Theme toggle: sized and weighted like a nav link, no chrome of its own. */
+  #theme-toggle {
+    font: inherit;
+    font-size: 0.95rem;
+    line-height: 1;
+    background: none;
+    border: 0;
+    border-radius: 2px;
+    padding: 0.3rem 0.35rem;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.75;
+    transition: opacity 0.18s ease;
+  }
+
+  #theme-toggle:hover {
+    opacity: 1;
+  }
+
+  .theme-toggle__icon {
+    display: none;
+  }
+
+  /* :global() because data-theme lives on <html>, outside this component. */
+  :global(html:not([data-theme='dark'])) .theme-toggle__icon--light,
+  :global(html[data-theme='dark']) .theme-toggle__icon--dark {
+    display: inline;
   }
 
   /* On narrow screens the nav wraps to its own line under the wordmark. */
