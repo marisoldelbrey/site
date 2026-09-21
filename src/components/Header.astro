@@ -11,27 +11,27 @@ const isCurrent = (href: string) =>
   <div class="wrap site-header__inner">
     <a class="wordmark" href="/">{SITE_TITLE_DISPLAY}</a>
 
-    <div class="site-header__end">
-      <nav aria-label="Main">
-        <ul class="nav">
-          {
-            NAV_LINKS.filter((link) => link.href !== '/').map((link) => (
-              <li>
-                <a
-                  href={link.href}
-                  aria-current={isCurrent(link.href) ? 'page' : undefined}
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-      </nav>
+    <nav aria-label="Main">
+      <ul class="nav">
+        {
+          NAV_LINKS.filter((link) => link.href !== '/').map((link) => (
+            <li>
+              <a
+                href={link.href}
+                aria-current={isCurrent(link.href) ? 'page' : undefined}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
 
-      {/* Every icon below is drawn with currentColor, so all of them follow
-          the active theme with no per-theme color rules. */}
-      <div class="header-icons">
+        {/* The icons are the last item in the nav list rather than a sibling of
+            the whole <nav>, so they flow straight after the final link and wrap
+            along with it instead of dropping to their own row on narrow
+            screens. Every icon is drawn with currentColor, so they all follow
+            the active theme with no per-theme color rules. */}
+        <li class="header-icons">
         <a
           class="icon-link"
           href={SOCIAL_LINKS.github}
@@ -111,8 +111,9 @@ const isCurrent = (href: string) =>
             ></path>
           </svg>
         </button>
-      </div>
-    </div>
+        </li>
+      </ul>
+    </nav>
   </div>
 </header>
 
@@ -155,14 +156,6 @@ const isCurrent = (href: string) =>
 
   .wordmark:hover {
     color: var(--accent);
-  }
-
-  /* Nav and the icon cluster share the right-hand side of the header. */
-  .site-header__end {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.4rem 1.5rem;
   }
 
   .nav {
@@ -208,17 +201,18 @@ const isCurrent = (href: string) =>
     color: var(--accent);
   }
 
-  /* Icon cluster. align-self centers it against the nav's baseline row, since
-     an SVG has no text baseline of its own to line up on. Direction and wrap
-     are stated rather than left to defaults so the icons cannot end up
-     stacked if this ever lands inside a column-direction parent. */
+  /* Icon cluster: a nav <li> that lays its own children out in a row. Direction
+     and wrap are stated rather than left to defaults so the icons cannot end up
+     stacked if this ever lands inside a column-direction parent. The small
+     negative margin pulls the first icon back level with the nav's text rhythm,
+     since .icon-link carries its own padding that the text links do not. */
   .header-icons {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
-    align-self: center;
     gap: 0.25rem;
+    margin-inline-start: -0.3rem;
   }
 
   /* One shared treatment for the two social links and the theme toggle, so
