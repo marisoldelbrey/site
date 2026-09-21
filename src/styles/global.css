@@ -44,7 +44,10 @@
   --measure: 68ch; /* comfortable reading width */
   --width-page: 68rem;
   --gutter: clamp(1.25rem, 5vw, 3rem);
-  --space-section: clamp(3.5rem, 8vw, 6.5rem);
+  /* Tightened ~35% from clamp(3.5rem, 8vw, 6.5rem). Sections still read as
+     distinct without the page feeling sparse. This token is site-wide, so
+     every page tightens with it, not just the homepage. */
+  --space-section: clamp(2.25rem, 5.5vw, 4.25rem);
 }
 
 /* Dark theme. Set on <html> by the inline script in BaseHead before first

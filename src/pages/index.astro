@@ -73,19 +73,6 @@ const formatStat = (s) =>
     </div>
   </section>
 
-  <!-- Intro -->
-  <section class="section intro">
-    <div class="wrap">
-      <hr class="divider" />
-      <p class="intro__copy">
-        Reporting directly to the COO, I support C-suite leadership with
-        reporting infrastructure, CRM and platform administration, and process
-        automation across a 100+ person firm. I also direct associate-level
-        support to scale delivery across these initiatives.
-      </p>
-    </div>
-  </section>
-
   <!-- Proof points -->
   <section class="section stats">
     <div class="wrap">
@@ -154,17 +141,32 @@ const formatStat = (s) =>
             requestAnimationFrame(step);
           };
 
+          // The hero entrance finishes ~960ms after load (0.41s delay + 0.55s
+          // duration on the last item). The strip now sits directly under the
+          // hero with tighter section spacing, so it is usually already on
+          // screen at load and would otherwise start counting while the hero is
+          // still moving. Hold it until the hero has settled. Anything revealed
+          // later, by scrolling, has a wait of 0 and fires immediately.
+          const HERO_SETTLE_MS = 960;
+          const startedAt = performance.now();
+
           const reveal = (el) => {
-            el.classList.add('is-visible');
-            const num = el.querySelector('[data-count]');
-            if (!num) return;
-            countUp(
-              num,
-              Number(num.dataset.count),
-              num.dataset.prefix || '',
-              num.dataset.suffix || '',
-              1000
+            const wait = Math.max(
+              0,
+              HERO_SETTLE_MS - (performance.now() - startedAt)
             );
+            window.setTimeout(() => {
+              el.classList.add('is-visible');
+              const num = el.querySelector('[data-count]');
+              if (!num) return;
+              countUp(
+                num,
+                Number(num.dataset.count),
+                num.dataset.prefix || '',
+                num.dataset.suffix || '',
+                1000
+              );
+            }, wait);
           };
 
           const observer = new IntersectionObserver(
@@ -182,6 +184,19 @@ const formatStat = (s) =>
           items.forEach((el) => observer.observe(el));
         })();
       </script>
+    </div>
+  </section>
+
+  <!-- Intro -->
+  <section class="section intro">
+    <div class="wrap">
+      <hr class="divider" />
+      <p class="intro__copy">
+        Reporting directly to the COO, I support C-suite leadership with
+        reporting infrastructure, CRM and platform administration, and process
+        automation across a 100+ person firm. I also direct associate-level
+        support to scale delivery across these initiatives.
+      </p>
     </div>
   </section>
 
