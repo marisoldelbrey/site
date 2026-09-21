@@ -2,28 +2,43 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 
-const pillars = [
+// The stat strip below the intro. `count` stats animate 0 -> value on scroll;
+// the `transform` stat fades its outcome in beside the starting value instead.
+// Markup always ships the final value, so the strip is correct with JS off or
+// prefers-reduced-motion set.
+const stats = [
   {
-    title: 'PMO in practice',
-    body: "I stood up the PMO function at the firm from scratch: project charters, a weekly cadence with the COO, and a balanced scorecard process covering every Tax and Legal staff member. The work doesn't just track projects, it creates the structure that lets the firm decide what to build next and whether it worked.",
+    kind: 'count',
+    value: 27,
+    prefix: '',
+    suffix: '%',
+    label: 'reduction in past-due AR following automation rollout',
   },
   {
-    title: 'Applied automation',
-    body: "I own the firm's Power Automate flows: CRM reporting, collections reminders, stale lead follow-up, and BSC data pulls. The builds are rarely clean because the underlying systems weren't designed to connect. Most of the work is figuring out where the data breaks and building around it, whether that's a Snowflake query that was silently dropping 279 invoices or an Outlook connector that couldn't handle a shared mailbox.",
+    kind: 'count',
+    value: 43925,
+    prefix: '$',
+    suffix: '+',
+    label: 'documented value delivered across automation initiatives',
   },
   {
-    title: 'AI governance and adoption',
-    body: "I'm the firm's AI champion: I work with departments across the firm to identify where AI can reduce manual work, then take those initiatives from idea to production. In an accounting and legal environment, that means navigating compliance constraints, getting skeptical professionals to trust the tools, and building guardrails that make adoption possible rather than just policy-compliant.",
+    kind: 'transform',
+    from: '24hrs',
+    to: 'instant',
+    label: 'intake turnaround after automating the process',
+  },
+  {
+    kind: 'count',
+    value: 936,
+    prefix: '',
+    suffix: '',
+    label:
+      'automated outreach emails sent across three campaign lists in a single week',
   },
 ];
 
-const proofPoints = [
-  'Built a firmwide AI usage policy with data tiering and an approved-workflow registry',
-  'Designed and deployed an AR collections automation and reporting layer end to end',
-  'Reconfigured recurring work schedules at scale across a firmwide practice management system',
-  'Owns monthly KPI and scorecard reporting for two departments',
-  'PMP candidate, September 2026',
-];
+const formatStat = (s) =>
+  `${s.prefix}${s.value.toLocaleString('en-US')}${s.suffix}`;
 ---
 
 <BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
@@ -58,30 +73,113 @@ const proofPoints = [
     </div>
   </section>
 
-  <!-- Three pillars -->
-  <section class="section pillars">
+  <!-- Intro -->
+  <section class="section intro">
     <div class="wrap">
-      <h2 class="eyebrow" id="pillars-heading">What I do</h2>
-      <div class="grid grid--3" role="list" aria-labelledby="pillars-heading">
-        {
-          pillars.map((pillar) => (
-            <article class="pillar" role="listitem">
-              <h3>{pillar.title}</h3>
-              <p>{pillar.body}</p>
-            </article>
-          ))
-        }
-      </div>
+      <p class="intro__copy">
+        Reporting directly to the COO, I support C-suite leadership with
+        reporting infrastructure, CRM and platform administration, and process
+        automation across a 100+ person firm. I also direct associate-level
+        support to scale delivery across these initiatives.
+      </p>
     </div>
   </section>
 
   <!-- Proof points -->
-  <section class="section proof">
+  <section class="section stats">
     <div class="wrap">
       <h2 class="eyebrow">Proof points</h2>
-      <ul class="proof__list">
-        {proofPoints.map((point) => <li>{point}</li>)}
+
+      <ul class="stats__list" data-stats>
+        {
+          stats.map((stat) => (
+            <li class="stat">
+              {stat.kind === 'count' ? (
+                <p class="stat__value">
+                  <span
+                    data-count={stat.value}
+                    data-prefix={stat.prefix}
+                    data-suffix={stat.suffix}
+                  >
+                    {formatStat(stat)}
+                  </span>
+                </p>
+              ) : (
+                <p class="stat__value">
+                  <span class="stat__from">{stat.from}</span>
+                  <span class="stat__arrow" aria-hidden="true">
+                    →
+                  </span>
+                  <span class="stat__to">{stat.to}</span>
+                </p>
+              )}
+              <p class="stat__label">{stat.label}</p>
+            </li>
+          ))
+        }
       </ul>
+
+      {/* Inline and directly after the strip so it runs during parse: it arms
+          the start state before the browser paints this section, which is what
+          keeps the final values from flashing before the animation begins. */}
+      <script is:inline>
+        (() => {
+          const strip = document.querySelector('[data-stats]');
+          if (!strip) return;
+
+          const items = Array.from(strip.querySelectorAll('.stat'));
+          const reduced = window.matchMedia(
+            '(prefers-reduced-motion: reduce)'
+          ).matches;
+
+          // Reduced motion or no observer support: leave the server-rendered
+          // final values exactly as they are.
+          if (reduced || !('IntersectionObserver' in window)) return;
+
+          items.forEach((el) => el.classList.add('is-armed'));
+
+          const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+
+          const countUp = (el, target, prefix, suffix, duration) => {
+            const started = performance.now();
+            const step = (now) => {
+              const t = Math.min((now - started) / duration, 1);
+              const current = Math.round(target * easeOut(t));
+              el.textContent =
+                prefix + current.toLocaleString('en-US') + suffix;
+              if (t < 1) requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
+          };
+
+          const reveal = (el) => {
+            el.classList.add('is-visible');
+            const num = el.querySelector('[data-count]');
+            if (!num) return;
+            countUp(
+              num,
+              Number(num.dataset.count),
+              num.dataset.prefix || '',
+              num.dataset.suffix || '',
+              1000
+            );
+          };
+
+          const observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+                // Once per stat, never again.
+                observer.unobserve(entry.target);
+                reveal(entry.target);
+              });
+            },
+            { threshold: 0.35, rootMargin: '0px 0px -10% 0px' }
+          );
+
+          items.forEach((el) => observer.observe(el));
+        })();
+      </script>
     </div>
   </section>
 
@@ -164,46 +262,121 @@ const proofPoints = [
     border-radius: 2px;
   }
 
-  /* Pillars */
-  .pillars {
+  /* Intro: same display-face lead treatment as .lead, at a reading measure. */
+  .intro {
     border-top: 1px solid var(--color-rule);
   }
 
-  .pillar h3 {
-    margin-bottom: 0.75rem;
+  .intro__copy {
+    font-family: var(--font-display);
+    font-size: var(--size-lead);
+    font-weight: 400;
+    line-height: 1.4;
+    max-width: var(--measure);
+    margin: 0;
   }
 
-  .pillar p {
-    margin-bottom: 0;
-    color: var(--text);
-  }
-
-  /* Proof points */
-  .proof {
+  /* Stat strip: one column on phones, two on tablets, four across on desktop. */
+  .stats {
     border-top: 1px solid var(--color-rule);
   }
 
-  .proof__list {
+  .stats__list {
     list-style: none;
     padding: 0;
     margin: 0;
-    max-width: var(--measure);
+    display: grid;
+    gap: clamp(1.5rem, 4vw, 2.5rem);
+    grid-template-columns: 1fr;
   }
 
-  .proof__list li {
-    padding: 0.9rem 0 0.9rem 1.75rem;
-    border-bottom: 1px solid var(--color-rule);
-    position: relative;
+  @media (min-width: 46rem) {
+    .stats__list {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
-  .proof__list li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 1.5em;
-    width: 0.6rem;
-    height: 1px;
-    background: var(--accent);
+  @media (min-width: 64rem) {
+    .stats__list {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .stat {
+    border-top: 1px solid var(--color-rule);
+    padding-top: 1.1rem;
+  }
+
+  .stat__value {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.3em;
+    font-family: var(--font-display);
+    font-size: var(--size-h2);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--accent);
+    margin: 0 0 0.6rem;
+    /* Reserve the line box so the count-up cannot reflow the label. */
+    min-height: 1.1em;
+  }
+
+  .stat__from {
+    color: var(--text);
+  }
+
+  .stat__arrow {
+    color: var(--color-warm-grey);
+  }
+
+  .stat__label {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--text);
+    opacity: 0.72;
+  }
+
+  /* ---- Scroll-in animation ----------------------------------------------
+     .is-armed is added by the inline script above, so with JS off (or reduced
+     motion) these rules never apply and the final state is what renders. */
+  .stat.is-armed {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  .stat.is-visible {
+    opacity: 1;
+    transform: none;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  /* Slight stagger when the whole strip enters together on desktop. */
+  .stat:nth-child(2).is-visible {
+    transition-delay: 0.08s;
+  }
+  .stat:nth-child(3).is-visible {
+    transition-delay: 0.16s;
+  }
+  .stat:nth-child(4).is-visible {
+    transition-delay: 0.24s;
+  }
+
+  /* The transformation stat: "24hrs" is already there, and the outcome fades
+     in beside it once the card is revealed. */
+  .stat.is-armed .stat__arrow,
+  .stat.is-armed .stat__to {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+
+  .stat.is-visible .stat__arrow,
+  .stat.is-visible .stat__to {
+    opacity: 1;
+    transform: none;
+    transition: opacity 0.5s ease 0.35s, transform 0.5s ease 0.35s;
   }
 
   /* Links out */
