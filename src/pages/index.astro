@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 
-// The stat strip below the intro. `count` stats animate 0 -> value on scroll;
+// The stat strip below the hero. `count` stats animate 0 -> value on scroll;
 // the `transform` stat fades its outcome in beside the starting value instead.
 // Markup always ships the final value, so the strip is correct with JS off or
 // prefers-reduced-motion set.
@@ -62,6 +62,14 @@ const formatStat = (s) =>
         <p class="hero__subhead">
           Combining PMO discipline with automation and AI that people actually
           use.
+        </p>
+
+        <p class="hero__support">
+          Reporting directly to the COO, I support C-suite leadership across
+          reporting, CRM, and process automation.
+        </p>
+        <p class="hero__support">
+          I also direct associate-level support to scale delivery.
         </p>
 
         <div class="hero__actions">
@@ -203,19 +211,6 @@ const formatStat = (s) =>
     </div>
   </section>
 
-  <!-- Intro -->
-  <section class="section intro">
-    <div class="wrap">
-      <hr class="divider" />
-      <p class="intro__copy">
-        Reporting directly to the COO, I support C-suite leadership with
-        reporting infrastructure, CRM and platform administration, and process
-        automation across a 100+ person firm. I also direct associate-level
-        support to scale delivery across these initiatives.
-      </p>
-    </div>
-  </section>
-
   <!-- Links out -->
   <section class="section next">
     <div class="wrap">
@@ -254,6 +249,7 @@ const formatStat = (s) =>
 
   .hero__line,
   .hero__subhead,
+  .hero__support,
   .hero__actions,
   .hero__figure {
     animation: hero-in 0.55s ease both;
@@ -264,6 +260,9 @@ const formatStat = (s) =>
   }
   .hero__subhead {
     animation-delay: 0.17s;
+  }
+  .hero__support {
+    animation-delay: 0.23s;
   }
   .hero__actions {
     animation-delay: 0.29s;
@@ -277,9 +276,24 @@ const formatStat = (s) =>
   @media (prefers-reduced-motion: reduce) {
     .hero__line,
     .hero__subhead,
+    .hero__support,
     .hero__actions,
     .hero__figure {
       animation: none;
+    }
+  }
+
+  /* The hero was carrying a band of empty space below the buttons and photo:
+     the section's own bottom padding, plus a bottom margin on the figure that
+     only separates the stacked phone layout. Trim the padding, and drop the
+     figure margin once the two columns sit side by side. */
+  .hero {
+    padding-bottom: clamp(1.25rem, 3vw, 2rem);
+  }
+
+  @media (min-width: 52rem) {
+    .hero__figure {
+      margin-bottom: 0;
     }
   }
 
@@ -318,13 +332,31 @@ const formatStat = (s) =>
     color: var(--text);
     opacity: 0.72;
     max-width: 38ch;
-    margin-bottom: 2rem;
+    margin-bottom: 0.45rem;
   }
 
+  /* Supporting detail under the subhead: smaller and muted so it recedes
+     behind the subhead rather than competing with it. NOTE: --color-warm-grey
+     measures 3.28:1 on --bg in the light theme, under the 4.5:1 WCAG AA floor
+     for text this size. Dark theme is fine at 6.39:1. Requested deliberately;
+     `color: var(--text); opacity: 0.62` reads about as muted and clears AA in
+     both themes if this ever needs to pass an audit. */
+  .hero__support {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--color-warm-grey);
+    max-width: 60ch;
+    margin: 0 0 0.2rem;
+  }
+
+  /* The gap before the buttons lives here rather than on the last line, so the
+     two support lines stay a single tight block. */
   .hero__actions {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
+    margin-top: 1.1rem;
   }
 
   /* --tint is the knob for the photo treatment: raise for a stronger accent
@@ -369,17 +401,6 @@ const formatStat = (s) =>
     height: 2px;
     background: var(--accent);
     margin: 0 0 clamp(1.75rem, 3vw, 2.5rem);
-  }
-
-  /* Intro: same display-face lead treatment as .lead, at a reading measure. */
-
-  .intro__copy {
-    font-family: var(--font-display);
-    font-size: var(--size-lead);
-    font-weight: 400;
-    line-height: 1.4;
-    max-width: var(--measure);
-    margin: 0;
   }
 
   /* Stat strip: one column on phones, two on tablets, four across on desktop. */

@@ -7,6 +7,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 //
 // `status` picks the badge color (see .status-* in global.css); `label` is the
 // text shown in it. `stack` may be empty, in which case no stack line renders.
+// `image` is optional too; supply it and the card renders a figure between the
+// head and the body. Sources live in public/images/.
+// `wide` makes a card span the whole grid row. Only put it on the LAST entry:
+// a wide card mid-array forces a row break and leaves holes beside it.
 const caseStudies = [
   {
     title: 'Collections Process Automation',
@@ -48,6 +52,55 @@ const caseStudies = [
       'Own monthly KPI and scorecard reporting across two departments; led a 12-month historical rollforward and built the reporting infrastructure from scratch.',
     stack: [],
   },
+  {
+    title: 'Accenture Innovation Challenge',
+    status: 'production',
+    label: 'Finalist · Top 0.05%',
+    description:
+      "Advanced to the final round of Accenture's Innovation Challenge, developing a data-backed business strategy for the National Park Foundation. Defined KPIs and measurement frameworks through cost-benefit analysis and Gen Z user segmentation, producing impact projections that shaped the final recommendation presented to senior Accenture stakeholders.",
+    stack: ['Business Strategy', 'Cost-Benefit Analysis', 'Presentation Skills'],
+  },
+  {
+    title: 'Cellular Tower ML Model',
+    status: 'production',
+    label: 'Fairness in AI Award',
+    description:
+      'Built a Python-based ML model to identify defective cellular towers across the U.S., translating business requirements into feature engineering specifications. Earned the Fairness in AI award by identifying systemic data bias and integrating underrepresented Puerto Rico data to improve both accuracy and equity of predictions.',
+    wide: true,
+    image: {
+      src: '/images/hurricane-probability-map.png',
+      alt: 'Probability heat map of hurricane risk to United States cellular towers. Tower locations are plotted on a blue-to-red scale from zero to one, with the interior of the country in dark blue at near-zero probability and the Gulf coast, the Atlantic seaboard, Florida and Puerto Rico in yellow through red at the highest probabilities.',
+      width: 1209,
+      height: 450,
+    },
+    stack: ['Python', 'Pandas', 'Scikit-Learn'],
+  },
+];
+
+// Supporting history, rendered below the cards in a lighter treatment so the
+// case studies above stay the focus.
+const earlierExperience = [
+  {
+    role: 'Healthcare Administration Intern',
+    org: 'Kaiser Permanente',
+    period: 'May–Aug 2025',
+    description:
+      'Identified operational inefficiencies in member data workflows using Excel and SQL, informing patient-centered care improvements, and coordinated cross-functional project milestones.',
+  },
+  {
+    role: 'ML/AI Fellow',
+    org: 'Break Through Tech (UCLA/Cornell)',
+    period: 'May 2023–Apr 2024',
+    description:
+      'Selected from 1,500+ applicants for a competitive applied AI fellowship; built ML skills across Pandas, Scikit-Learn, and NumPy, and translated model outputs into stakeholder-facing reports.',
+  },
+  {
+    role: 'Student Research Assistant',
+    org: 'Chapman Fowler School of Engineering',
+    period: 'Jun–Dec 2023',
+    description:
+      'Modeled California water budget scenarios from 1998-2019 and built a Tableau visualization projecting future supply and demand dynamics.',
+  },
 ];
 ---
 
@@ -55,7 +108,7 @@ const caseStudies = [
   title="Work"
   description="Selected engagements in automation, reporting, and firm operations."
 >
-  <section class="section">
+  <section class="section work-intro">
     <div class="wrap">
       <p class="eyebrow">Work</p>
       <h1>Selected work.</h1>
@@ -64,10 +117,10 @@ const caseStudies = [
 
   <section class="section work-list">
     <div class="wrap">
-      <ul class="grid grid--2 case-grid">
+      <ul class="grid grid--3 case-grid">
         {
           caseStudies.map((study) => (
-            <li class="case-card">
+            <li class={`case-card${study.wide ? ' case-card--wide' : ''}`}>
               <div class="case-card__head">
                 <h2 class="case-card__title">{study.title}</h2>
                 <span class={`status-badge status-${study.status}`}>
@@ -75,11 +128,44 @@ const caseStudies = [
                 </span>
               </div>
 
+              {study.image && (
+                <figure class="case-card__figure">
+                  <img
+                    src={study.image.src}
+                    alt={study.image.alt}
+                    width={study.image.width}
+                    height={study.image.height}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </figure>
+              )}
+
               <p class="case-card__body">{study.description}</p>
 
               {study.stack.length > 0 && (
                 <p class="case-card__stack">{study.stack.join(' · ')}</p>
               )}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section earlier">
+    <div class="wrap">
+      <h2 class="eyebrow">Earlier experience</h2>
+
+      <ul class="earlier__list">
+        {
+          earlierExperience.map((role) => (
+            <li class="earlier__item">
+              <h3 class="earlier__role">{role.role}</h3>
+              <p class="earlier__meta">
+                {role.org} · {role.period}
+              </p>
+              <p class="earlier__body">{role.description}</p>
             </li>
           ))
         }
@@ -96,7 +182,29 @@ const caseStudies = [
 </BaseLayout>
 
 <style>
+  /* The eyebrow carries the page label, so the title itself does not need
+     hero-sized type: --size-h1 tops out at 4rem, which is larger than the
+     homepage hero (2.75rem). --size-h3 is the smallest step on the existing
+     scale, which keeps this off a bespoke clamp. The display face and the
+     eyebrow above it are what mark it as the page title now, not its size. */
+  .work-intro h1 {
+    font-size: var(--size-h3);
+    /* Last element in the block, so its bottom margin would stack on top of
+       the section padding below. */
+    margin-bottom: 0;
+  }
+
+  /* The title block's padding met .work-list's top padding, roughly 8.5rem of
+     combined space before the first card at desktop. Both sides are trimmed so
+     the header block takes only the room it needs; .work-list's own top
+     padding still separates it from the first card. */
+  .work-intro {
+    padding-top: clamp(1.25rem, 3vw, 2rem);
+    padding-bottom: clamp(0.75rem, 2vw, 1.25rem);
+  }
+
   .work-list,
+  .earlier,
   .work-cta {
     border-top: 1px solid var(--color-rule);
   }
@@ -106,6 +214,16 @@ const caseStudies = [
     padding: 0;
     margin: 0;
     align-items: start;
+  }
+
+  /* .grid--3 steps straight from one column to three at 46rem, which leaves
+     roughly 200px per card - too narrow for a title, badge and description.
+     Hold two columns through the tablet band and take the third at 64rem, the
+     same breakpoint the homepage stat strip uses for its final step. */
+  @media (min-width: 46rem) and (max-width: 63.999rem) {
+    .case-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
   /* Same surface treatment and hover lift as the homepage .next__card, so the
@@ -121,6 +239,24 @@ const caseStudies = [
   .case-card:hover {
     border-color: var(--accent);
     transform: translateY(-2px);
+  }
+
+  /* Seven cards over three columns fills 3/3/1, which would strand the last
+     one in the left third. It spans the full row instead, which also gives its
+     2.7:1 map the width it needs to be readable. Applied from 46rem so it
+     closes the same gap in the two-column band, where 7 fills 2/2/2/1. */
+  @media (min-width: 46rem) {
+    .case-card--wide {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* The card is now up to ~1000px wide, so the text needs its own measure or
+     the description runs to unreadable line lengths. The figure is left full
+     width. */
+  .case-card--wide .case-card__body,
+  .case-card--wide .case-card__title {
+    max-width: var(--measure);
   }
 
   /* Title and badge share a row; the badge drops below on very narrow cards. */
@@ -139,6 +275,27 @@ const caseStudies = [
     max-width: 22ch;
   }
 
+  /* Optional card media. It sits below the head so the title and badge rows
+     still line up across the grid row. Deliberately no aspect-ratio or
+     object-fit: cropping a data visualization would cut off the map or its
+     legend, so the image keeps its own proportions and the global `img` rule
+     (max-width: 100%; height: auto) scales it down on narrow cards. */
+  .case-card__figure {
+    margin: 0 0 1.1rem;
+  }
+
+  .case-card__figure img {
+    width: 100%;
+    /* The chart is a Plotly export on a white canvas, so white is set behind
+       it too: that only matters if the image is ever re-exported with
+       transparency, where the dark card would otherwise show through the
+       plot. The chart's own colors are left alone - dimming a data
+       visualization would misrepresent the scale it exists to communicate. */
+    background: #fff;
+    border: 1px solid var(--color-rule);
+    border-radius: 2px;
+  }
+
   .case-card__body {
     margin: 0;
     color: var(--text);
@@ -155,6 +312,47 @@ const caseStudies = [
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--color-warm-grey);
+  }
+
+  /* ---- Earlier experience ------------------------------------------------
+     Deliberately steps down from the cards above: no surface, border or hover,
+     just a rule down the left edge and smaller type, so it reads as supporting
+     history rather than another case study. */
+  .earlier__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: clamp(1.25rem, 3vw, 1.75rem);
+    max-width: var(--measure);
+  }
+
+  .earlier__item {
+    border-left: 1px solid var(--color-rule);
+    padding-left: clamp(1rem, 3vw, 1.5rem);
+  }
+
+  .earlier__role {
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  /* Same small uppercase label idiom as .case-card__stack and .eyebrow. */
+  .earlier__meta {
+    margin: 0.15rem 0 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-warm-grey);
+  }
+
+  .earlier__body {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--text);
+    opacity: 0.78;
   }
 
   .work-cta .lead {
