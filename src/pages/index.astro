@@ -1,8 +1,15 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import {
+  SITE_TITLE,
+  SITE_DESCRIPTION,
+  SITE_TITLE_DISPLAY,
+  NAV_LINKS,
+  SOCIAL_LINKS,
+} from '../consts';
+import { caseStudies } from '../data/work.js';
 
-// The stat strip below the hero. `count` stats animate 0 -> value on scroll;
+// The stat strip in section 02. `count` stats animate 0 -> value on scroll;
 // the `transform` stat fades its outcome in beside the starting value instead.
 // Markup always ships the final value, so the strip is correct with JS off or
 // prefers-reduced-motion set.
@@ -48,137 +55,190 @@ const formatStat = (s) =>
     minimumFractionDigits: decimalsOf(s.value),
     maximumFractionDigits: decimalsOf(s.value),
   })}${s.suffix}`;
+
+// Previews only. The full case studies live on /work/, and both read the same
+// array, so these cannot drift from it. The first sentence of each description
+// is enough for a one-line preview.
+// A one-sentence description has no '. ' to split on, so the whole string
+// comes back with its period already attached - only add one if it is missing.
+const firstSentence = (text) => {
+  const s = text.split('. ')[0].trim();
+  return s.endsWith('.') ? s : s + '.';
+};
+
+const previews = caseStudies.slice(0, 3).map((study) => ({
+  title: study.title,
+  line: firstSentence(study.description),
+}));
+
+// The sidebar nav repeats the site nav minus Home, which is this page.
+const sidebarLinks = NAV_LINKS.filter((link) => link.href !== '/');
 ---
 
 <BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
-  <!-- Hero -->
-  <section class="section hero">
-    <div class="wrap hero__inner">
-      <div class="hero__text">
-        <h1 class="hero__line">
+  <div class="wrap home">
+    {/* Left column. Sticky from 64rem up, a normal stacked block below that. */}
+    <header class="home__aside">
+      <div class="home__intro">
+        <h1 class="home__name">{SITE_TITLE_DISPLAY}</h1>
+        <p class="home__tagline">
           I build the operating systems behind professional services firms.
-        </h1>
-
-        <p class="hero__subhead">
-          Combining PMO discipline with automation and AI that people actually
-          use.
         </p>
 
-        <p class="hero__support">
-          Reporting directly to the COO, I support C-suite leadership across
-          reporting, CRM, and process automation.
-        </p>
-        <p class="hero__support">
-          I also direct associate-level support to scale delivery.
-        </p>
-
-        <div class="hero__actions">
-          <a class="button button--accent" href="/work/">See the work</a>
-          <a class="button" href="/contact/">Get in touch</a>
-        </div>
+        <nav class="home__nav" aria-label="Sections">
+          <ul>
+            {
+              sidebarLinks.map((link) => (
+                <li>
+                  <a href={link.href}>{link.label}</a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
       </div>
 
-      <figure class="hero__figure">
-        <img
-          src="/images/marisol.jpg"
-          alt="Marisol Delbrey"
-          width="1920"
-          height="1280"
-          fetchpriority="high"
-        />
-      </figure>
-    </div>
-  </section>
-
-  <!-- By the numbers -->
-  <section class="section stats">
-    <div class="wrap">
-      <hr class="divider" />
-      <h2 class="eyebrow">By the numbers</h2>
-
-      <ul class="stats__list" data-stats>
-        {
-          stats.map((stat) => (
-            <li class="stat">
-              {stat.kind === 'count' ? (
-                <p class="stat__value">
-                  <span
-                    data-count={stat.value}
-                    data-decimals={decimalsOf(stat.value)}
-                    data-prefix={stat.prefix}
-                    data-suffix={stat.suffix}
-                  >
-                    {formatStat(stat)}
-                  </span>
-                </p>
-              ) : (
-                <p class="stat__value">
-                  <span class="stat__from">{stat.from}</span>
-                  <span class="stat__arrow" aria-hidden="true">
-                    →
-                  </span>
-                  <span class="stat__to">{stat.to}</span>
-                </p>
-              )}
-              <p class="stat__label">{stat.label}</p>
-            </li>
-          ))
-        }
+      {/* Drawn with currentColor, so both follow the active theme with no
+          per-theme color rules. Same paths as the header icons. */}
+      <ul class="home__social">
+        <li>
+          <a
+            href={SOCIAL_LINKS.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub (opens in a new tab)"
+          >
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.05-.02-2.06-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6.01 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.62-5.49 5.92.43.37.82 1.1.82 2.22 0 1.6-.02 2.89-.02 3.29 0 .32.22.69.83.58A12 12 0 0 0 24 12.5C24 5.87 18.63.5 12 .5z"
+              ></path>
+            </svg>
+          </a>
+        </li>
+        <li>
+          <a
+            href={SOCIAL_LINKS.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="LinkedIn (opens in a new tab)"
+          >
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.44-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zm1.78 13.02H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"
+              ></path>
+            </svg>
+          </a>
+        </li>
       </ul>
+    </header>
 
-      {/* Inline and directly after the strip so it runs during parse: it arms
-          the start state before the browser paints this section, which is what
-          keeps the final values from flashing before the animation begins. */}
-      <script is:inline>
-        (() => {
-          const strip = document.querySelector('[data-stats]');
-          if (!strip) return;
+    {/* Right column, scrolls normally. */}
+    <div class="home__main">
+      <section class="home__section" id="about" aria-labelledby="h-about">
+        <h2 class="home__heading" id="h-about">
+          <span class="home__num">01.</span>
+          <span>About</span>
+        </h2>
 
-          const items = Array.from(strip.querySelectorAll('.stat'));
-          const reduced = window.matchMedia(
-            '(prefers-reduced-motion: reduce)'
-          ).matches;
+        <div class="home__prose">
+          <p>
+            Reporting directly to the COO, I support C-suite leadership across
+            reporting, CRM, and process automation.
+          </p>
+          <p>I also direct associate-level support to scale delivery.</p>
+        </div>
+      </section>
 
-          // Reduced motion or no observer support: leave the server-rendered
-          // final values exactly as they are.
-          if (reduced || !('IntersectionObserver' in window)) return;
+      <section class="home__section" id="impact" aria-labelledby="h-impact">
+        <h2 class="home__heading" id="h-impact">
+          <span class="home__num">02.</span>
+          <span>Impact</span>
+        </h2>
 
-          items.forEach((el) => el.classList.add('is-armed'));
+        <ul class="stats__list" data-stats>
+          {
+            stats.map((stat) => (
+              <li class="stat">
+                {stat.kind === 'count' ? (
+                  <p class="stat__value">
+                    <span
+                      data-count={stat.value}
+                      data-decimals={decimalsOf(stat.value)}
+                      data-prefix={stat.prefix}
+                      data-suffix={stat.suffix}
+                    >
+                      {formatStat(stat)}
+                    </span>
+                  </p>
+                ) : (
+                  <p class="stat__value">
+                    <span class="stat__from">{stat.from}</span>
+                    <span class="stat__arrow" aria-hidden="true">
+                      →
+                    </span>
+                    <span class="stat__to">{stat.to}</span>
+                  </p>
+                )}
+                <p class="stat__label">{stat.label}</p>
+              </li>
+            ))
+          }
+        </ul>
 
-          const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+        {/* Inline and directly after the strip so it runs during parse: it arms
+            the start state before the browser paints this section, which is
+            what keeps the final values from flashing before the animation
+            begins. */}
+        <script is:inline>
+          (() => {
+            const strip = document.querySelector('[data-stats]');
+            if (!strip) return;
 
-          const countUp = (el, target, prefix, suffix, decimals, duration) => {
-            const started = performance.now();
-            const step = (now) => {
-              const t = Math.min((now - started) / duration, 1);
-              const current = target * easeOut(t);
-              el.textContent =
-                prefix +
-                current.toLocaleString('en-US', {
-                  minimumFractionDigits: decimals,
-                  maximumFractionDigits: decimals,
-                }) +
-                suffix;
-              if (t < 1) requestAnimationFrame(step);
+            const items = Array.from(strip.querySelectorAll('.stat'));
+            const reduced = window.matchMedia(
+              '(prefers-reduced-motion: reduce)'
+            ).matches;
+
+            // Reduced motion or no observer support: leave the server-rendered
+            // final values exactly as they are.
+            if (reduced || !('IntersectionObserver' in window)) return;
+
+            items.forEach((el) => el.classList.add('is-armed'));
+
+            const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+
+            const countUp = (el, target, prefix, suffix, decimals, duration) => {
+              const started = performance.now();
+              const step = (now) => {
+                const t = Math.min((now - started) / duration, 1);
+                const current = target * easeOut(t);
+                el.textContent =
+                  prefix +
+                  current.toLocaleString('en-US', {
+                    minimumFractionDigits: decimals,
+                    maximumFractionDigits: decimals,
+                  }) +
+                  suffix;
+                if (t < 1) requestAnimationFrame(step);
+              };
+              requestAnimationFrame(step);
             };
-            requestAnimationFrame(step);
-          };
 
-          // The hero entrance finishes ~960ms after load (0.41s delay + 0.55s
-          // duration on the last item). The strip now sits directly under the
-          // hero with tighter section spacing, so it is usually already on
-          // screen at load and would otherwise start counting while the hero is
-          // still moving. Hold it until the hero has settled. Anything revealed
-          // later, by scrolling, has a wait of 0 and fires immediately.
-          const HERO_SETTLE_MS = 960;
-          const startedAt = performance.now();
-
-          const reveal = (el) => {
-            const wait = Math.max(
-              0,
-              HERO_SETTLE_MS - (performance.now() - startedAt)
-            );
-            window.setTimeout(() => {
+            // The strip sits in its own section now rather than under a hero
+            // entrance, so there is nothing to wait out: reveal on sight.
+            const reveal = (el) => {
               el.classList.add('is-visible');
               const num = el.querySelector('[data-count]');
               if (!num) return;
@@ -190,238 +250,282 @@ const formatStat = (s) =>
                 Number(num.dataset.decimals) || 0,
                 1000
               );
-            }, wait);
-          };
+            };
 
-          const observer = new IntersectionObserver(
-            (entries) => {
-              entries.forEach((entry) => {
-                if (!entry.isIntersecting) return;
-                // Once per stat, never again.
-                observer.unobserve(entry.target);
-                reveal(entry.target);
-              });
-            },
-            { threshold: 0.35, rootMargin: '0px 0px -10% 0px' }
-          );
+            const observer = new IntersectionObserver(
+              (entries) => {
+                entries.forEach((entry) => {
+                  if (!entry.isIntersecting) return;
+                  // Once per stat, never again.
+                  observer.unobserve(entry.target);
+                  reveal(entry.target);
+                });
+              },
+              { threshold: 0.35, rootMargin: '0px 0px -10% 0px' }
+            );
 
-          items.forEach((el) => observer.observe(el));
-        })();
-      </script>
+            items.forEach((el) => observer.observe(el));
+          })();
+        </script>
+      </section>
+
+      <section class="home__section" id="work" aria-labelledby="h-work">
+        <h2 class="home__heading" id="h-work">
+          <span class="home__num">03.</span>
+          <span>Work</span>
+        </h2>
+
+        <p class="home__prose">
+          Automation, reporting, and operations work for a 100+ person
+          professional services firm.
+        </p>
+
+        <ul class="preview-list">
+          {
+            previews.map((project) => (
+              <li class="preview">
+                <h3 class="preview__title">{project.title}</h3>
+                <p class="preview__line">{project.line}</p>
+                <a class="preview__link" href="/work/">
+                  View project
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+
+        <a class="home__more" href="/work/">See all work</a>
+      </section>
     </div>
-  </section>
-
-  <!-- Links out -->
-  <section class="section next">
-    <div class="wrap">
-      <hr class="divider" />
-      <div class="grid grid--2">
-        <a class="next__card" href="/writing/">
-          <h2>Writing</h2>
-          <p>Notes on the work, published as I go.</p>
-          <span class="next__cue" aria-hidden="true">Read the writing</span>
-        </a>
-        <a class="next__card" href="/contact/">
-          <h2>Contact</h2>
-          <p>Tell me what you are trying to fix.</p>
-          <span class="next__cue" aria-hidden="true">Start a conversation</span>
-        </a>
-      </div>
-    </div>
-  </section>
+  </div>
 </BaseLayout>
 
 <style>
-  /* ---- Hero entrance -----------------------------------------------------
-     Above the fold, so this is a plain CSS animation rather than the observer
-     the stat strip uses. animation-fill-mode: both holds the start state
-     through the delay, so nothing flashes its final position first. */
-  @keyframes hero-in {
-    from {
-      opacity: 0;
-      transform: translateY(12px);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-
-  .hero__line,
-  .hero__subhead,
-  .hero__support,
-  .hero__actions,
-  .hero__figure {
-    animation: hero-in 0.55s ease both;
-  }
-
-  .hero__line {
-    animation-delay: 0.05s;
-  }
-  .hero__subhead {
-    animation-delay: 0.17s;
-  }
-  .hero__support {
-    animation-delay: 0.23s;
-  }
-  .hero__actions {
-    animation-delay: 0.29s;
-  }
-  .hero__figure {
-    animation-delay: 0.41s;
-  }
-
-  /* The global reduced-motion rule only shortens durations, which would still
-     leave these hidden through their delay. Drop the animation outright. */
-  @media (prefers-reduced-motion: reduce) {
-    .hero__line,
-    .hero__subhead,
-    .hero__support,
-    .hero__actions,
-    .hero__figure {
-      animation: none;
-    }
-  }
-
-  /* The hero was carrying a band of empty space below the buttons and photo:
-     the section's own bottom padding, plus a bottom margin on the figure that
-     only separates the stacked phone layout. Trim the padding, and drop the
-     figure margin once the two columns sit side by side. */
-  .hero {
-    padding-bottom: clamp(1.25rem, 3vw, 2rem);
-  }
-
-  @media (min-width: 52rem) {
-    .hero__figure {
-      margin-bottom: 0;
-    }
-  }
-
-  /* Hero: single column on phones, text and image side by side on desktop. */
-  .hero__inner {
+  /* ---- Two-column shell --------------------------------------------------
+     One column by default; the split and the sticky sidebar arrive together at
+     64rem, the same breakpoint the rest of the site uses for its widest step. */
+  .home {
     display: grid;
-    gap: clamp(2rem, 5vw, 3.5rem);
-    align-items: center;
+    gap: clamp(2.5rem, 6vw, 4rem);
+    padding-block: var(--space-section);
   }
 
-  @media (min-width: 52rem) {
-    .hero__inner {
-      grid-template-columns: 1.15fr 0.85fr;
+  @media (min-width: 64rem) {
+    .home {
+      grid-template-columns: minmax(0, 38fr) minmax(0, 62fr);
+      gap: clamp(3rem, 6vw, 5rem);
+      align-items: start;
+    }
+
+    .home__aside {
+      position: sticky;
+      top: 0;
+      /* Fills the viewport so the icons can sit at the bottom of the column,
+         and scrolls internally if a short screen cannot hold it all. The
+         negative margin cancels the padding so the name still lines up with
+         the first section heading. */
+      max-height: 100vh;
+      padding-block: var(--space-section);
+      margin-block: calc(var(--space-section) * -1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 2rem;
+      overflow-y: auto;
     }
   }
 
-  /* Sized so the headline sits at three lines in the hero's text column at
-     desktop widths, and two on a phone. */
-  .hero__line {
-    font-size: clamp(2rem, 4vw, 2.75rem);
-    font-weight: 400;
-    line-height: 1.22;
-    letter-spacing: -0.015em;
-    max-width: 24ch;
-    margin-bottom: 0.75rem;
+  /* ---- Sidebar -----------------------------------------------------------*/
+  .home__name {
+    font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.4rem);
+    line-height: 1.1;
+    margin: 0 0 0.6rem;
   }
 
-  /* Body face, regular weight, stepped back from the headline. Uses --text at
-     reduced opacity rather than --color-warm-grey so it keeps AA contrast in
-     both themes at this size. */
-  .hero__subhead {
+  .home__tagline {
     font-family: var(--font-body);
-    font-size: var(--size-lead);
-    font-weight: 400;
+    font-size: 1.05rem;
     line-height: 1.5;
     color: var(--text);
     opacity: 0.72;
-    max-width: 38ch;
-    margin-bottom: 0.45rem;
-  }
-
-  /* Supporting detail under the subhead: smaller and muted so it recedes
-     behind the subhead rather than competing with it. NOTE: --color-warm-grey
-     measures 3.28:1 on --bg in the light theme, under the 4.5:1 WCAG AA floor
-     for text this size. Dark theme is fine at 6.39:1. Requested deliberately;
-     `color: var(--text); opacity: 0.62` reads about as muted and clears AA in
-     both themes if this ever needs to pass an audit. */
-  .hero__support {
-    font-family: var(--font-body);
-    font-size: 0.875rem;
-    line-height: 1.55;
-    color: var(--color-warm-grey);
-    max-width: 60ch;
-    margin: 0 0 0.2rem;
-  }
-
-  /* The gap before the buttons lives here rather than on the last line, so the
-     two support lines stay a single tight block. */
-  .hero__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-top: 1.1rem;
-  }
-
-  /* --tint is the knob for the photo treatment: raise for a stronger accent
-     wash, set to 0 to turn it off entirely. soft-light keeps the photo's own
-     contrast intact and just pulls it toward the palette. */
-  .hero__figure {
-    --tint: 0.18;
-    position: relative;
+    max-width: 34ch;
     margin: 0;
   }
 
-  .hero__figure::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--accent);
-    mix-blend-mode: soft-light;
-    opacity: var(--tint);
-    border-radius: 2px;
-    pointer-events: none;
+  .home__nav {
+    margin-top: clamp(1.75rem, 4vw, 3rem);
   }
 
-  /* The source photo is landscape (1920x1280 = 3:2). The slot is 4:3, close
-     enough that cover trims ~11% off the sides as a deliberate crop instead of
-     the ~47% the old 4:5 portrait slot was discarding. Keeping it near the
-     source ratio is also what pulls the CTAs back above the fold, since this
-     image is the tallest thing in the hero row. */
-  .hero__figure img {
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
-    object-position: 47% 40%;
-    border-radius: 2px;
+  .home__nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
   }
 
-  /* Section markers. These replace the full-width rules that used to separate
-     the homepage sections: a short accent dash, aligned to the text column
-     because it sits inside .wrap rather than on the section edge. */
-  .divider {
-    border: 0;
-    width: 2rem;
-    height: 2px;
-    background: var(--accent);
-    margin: 0 0 clamp(1.75rem, 3vw, 2.5rem);
+  /* Vertical from the tablet band up; a wrapping row on phones, where a tall
+     stack would push the first section below the fold. */
+  @media (min-width: 46rem) {
+    .home__nav ul {
+      flex-direction: column;
+      gap: 0.85rem;
+    }
   }
 
-  /* Stat strip: one column on phones, two on tablets, four across on desktop. */
+  .home__nav a {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-warm-grey);
+    text-decoration: none;
+    transition: color 0.18s ease;
+  }
+
+  .home__nav a:hover,
+  .home__nav a:focus-visible {
+    color: var(--accent);
+  }
+
+  .home__social {
+    list-style: none;
+    padding: 0;
+    margin: clamp(2rem, 5vw, 3rem) 0 0;
+    display: flex;
+    gap: 1.1rem;
+  }
+
+  @media (min-width: 64rem) {
+    .home__social {
+      margin-top: 0;
+    }
+  }
+
+  .home__social a {
+    display: block;
+    color: var(--color-warm-grey);
+    transition: color 0.18s ease, transform 0.18s ease;
+  }
+
+  .home__social a:hover,
+  .home__social a:focus-visible {
+    color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  /* ---- Numbered sections -------------------------------------------------*/
+  .home__section + .home__section {
+    margin-top: clamp(3rem, 8vw, 5.5rem);
+  }
+
+  .home__heading {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    font-size: var(--size-h3);
+    margin: 0 0 1.5rem;
+  }
+
+  /* Mono for the number, display face for the label, per the numbered-section
+     convention. --font-mono is a system stack, so nothing extra downloads. */
+  .home__num {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    color: var(--accent);
+  }
+
+  .home__prose {
+    max-width: var(--measure);
+    margin: 0;
+  }
+
+  .home__prose p {
+    margin: 0;
+  }
+
+  .home__prose p + p {
+    margin-top: 1rem;
+  }
+
+  /* ---- Work previews -----------------------------------------------------
+     A rule between entries rather than a card each: these point at the Work
+     page, they are not the case studies themselves. */
+  .preview-list {
+    list-style: none;
+    padding: 0;
+    margin: 1.75rem 0 0;
+    display: grid;
+    gap: 1px;
+    background: var(--color-rule);
+    border-block: 1px solid var(--color-rule);
+  }
+
+  .preview {
+    background: var(--bg);
+    padding: 1.25rem 0.75rem;
+    transition: background 0.18s ease;
+  }
+
+  .preview:hover {
+    background: var(--color-surface);
+  }
+
+  .preview__title {
+    font-size: 1.05rem;
+    margin: 0 0 0.35rem;
+  }
+
+  .preview__line {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--text);
+    opacity: 0.75;
+    max-width: 60ch;
+    margin: 0 0 0.5rem;
+  }
+
+  .preview__link,
+  .home__more {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .preview__link:hover,
+  .preview__link:focus-visible,
+  .home__more:hover,
+  .home__more:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 0.3em;
+  }
+
+  .home__more {
+    margin-top: 1.75rem;
+  }
+
+  /* ---- Stat strip --------------------------------------------------------
+     One column on phones, two above that. It sits in the narrower right column
+     now, so it never goes four across. */
   .stats__list {
     list-style: none;
     padding: 0;
     margin: 0;
     display: grid;
-    gap: clamp(1.5rem, 4vw, 2.5rem);
+    gap: clamp(1.5rem, 4vw, 2.25rem);
     grid-template-columns: 1fr;
   }
 
-  @media (min-width: 46rem) {
+  @media (min-width: 30rem) {
     .stats__list {
       grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .stats__list {
-      grid-template-columns: repeat(4, 1fr);
     }
   }
 
@@ -476,7 +580,6 @@ const formatStat = (s) =>
     transition: opacity 0.6s ease, transform 0.6s ease;
   }
 
-  /* Slight stagger when the whole strip enters together on desktop. */
   .stat:nth-child(2).is-visible {
     transition-delay: 0.08s;
   }
@@ -487,8 +590,6 @@ const formatStat = (s) =>
     transition-delay: 0.24s;
   }
 
-  /* The transformation stat: "24hrs" is already there, and the outcome fades
-     in beside it once the card is revealed. */
   .stat.is-armed .stat__arrow,
   .stat.is-armed .stat__to {
     opacity: 0;
@@ -500,40 +601,5 @@ const formatStat = (s) =>
     opacity: 1;
     transform: none;
     transition: opacity 0.5s ease 0.35s, transform 0.5s ease 0.35s;
-  }
-
-  /* Links out */
-  .next__card {
-    display: block;
-    text-decoration: none;
-    background: var(--color-surface);
-    border: 1px solid var(--color-rule);
-    border-radius: 2px;
-    padding: clamp(1.5rem, 4vw, 2.25rem);
-    transition: border-color 0.18s ease, transform 0.18s ease;
-  }
-
-  .next__card:hover {
-    border-color: var(--accent);
-    transform: translateY(-2px);
-    color: inherit;
-  }
-
-  .next__card h2 {
-    font-size: var(--size-h3);
-    margin-bottom: 0.4rem;
-  }
-
-  .next__card p {
-    color: var(--color-warm-grey);
-    margin-bottom: 1rem;
-  }
-
-  .next__cue {
-    font-size: 0.85rem;
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--accent);
   }
 </style>
