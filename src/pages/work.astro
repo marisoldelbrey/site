@@ -37,7 +37,11 @@ const gridStudies = caseStudies.filter((s) => !s.featured);
                 <p class="case-card__body">{study.description}</p>
 
                 {study.stack.length > 0 && (
-                  <p class="case-card__stack">{study.stack.join(' · ')}</p>
+                  <ul class="case-card__stack">
+                    {study.stack.map((tech) => (
+                      <li class="pill">{tech}</li>
+                    ))}
+                  </ul>
                 )}
               </div>
 
@@ -70,7 +74,11 @@ const gridStudies = caseStudies.filter((s) => !s.featured);
               <p class="case-card__body">{study.description}</p>
 
               {study.stack.length > 0 && (
-                <p class="case-card__stack">{study.stack.join(' · ')}</p>
+                <ul class="case-card__stack">
+                  {study.stack.map((tech) => (
+                    <li class="pill">{tech}</li>
+                  ))}
+                </ul>
               )}
             </li>
           ))
@@ -83,19 +91,31 @@ const gridStudies = caseStudies.filter((s) => !s.featured);
     <div class="wrap">
       <h2 class="eyebrow">Earlier experience</h2>
 
-      <ul class="earlier__list">
-        {
-          earlierExperience.map((role) => (
-            <li class="earlier__item">
-              <h3 class="earlier__role">{role.role}</h3>
-              <p class="earlier__meta">
-                {role.org} · {role.period}
-              </p>
-              <p class="earlier__body">{role.description}</p>
-            </li>
-          ))
-        }
-      </ul>
+      <table class="archive">
+        <caption class="visually-hidden">Earlier experience</caption>
+        <thead class="visually-hidden">
+          <tr>
+            <th scope="col">Role and organization</th>
+            <th scope="col">Dates</th>
+            <th scope="col">Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            earlierExperience.map((role) => (
+              <tr>
+                <td class="archive__role">
+                  <span class="archive__title">{role.role}</span>
+                  <span class="archive__org">{role.org}</span>
+                  <span class="archive__summary">{role.description}</span>
+                </td>
+                <td class="archive__date">{role.period}</td>
+                <td class="archive__tag">{role.kind}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
     </div>
   </section>
 
@@ -211,6 +231,7 @@ const gridStudies = caseStudies.filter((s) => !s.featured);
   .case-card:hover,
   .feature-card:hover {
     border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 4%, var(--color-surface));
     transform: translateY(-2px);
   }
 
@@ -267,59 +288,116 @@ const gridStudies = caseStudies.filter((s) => !s.featured);
 
   /* Matches the small uppercase label idiom used by .eyebrow and the contact
      list labels. */
+  /* margin-top:auto bottom-aligns it, so the rule sits at the same height
+     across a row of otherwise unequal text. */
   .case-card__stack {
-    /* margin-top:auto bottom-aligns it, so the rule sits at the same height
-       across a row of otherwise unequal text. */
+    list-style: none;
     margin: 1.1rem 0 0;
     margin-top: auto;
-    padding-top: 0.9rem;
+    padding: 0.9rem 0 0;
     border-top: 1px solid var(--color-rule);
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  /* One badge per technology. Monospace, matching the other metadata on the
+     site. */
+  .pill {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
     color: var(--color-warm-grey);
+    background: var(--color-accent-soft);
+    border: 1px solid var(--color-rule);
+    border-radius: 999px;
+    padding: 0.2rem 0.6rem;
+    white-space: nowrap;
   }
 
   /* ---- Earlier experience ------------------------------------------------
-     Deliberately steps down from the cards above: no surface, border or hover,
-     just a rule down the left edge and smaller type, so it reads as supporting
-     history rather than another case study. */
-  .earlier__list {
-    list-style: none;
+     An archive table rather than cards: this is supporting history, so it gets
+     a row each and nothing else. No borders beyond a hairline between rows. */
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
     padding: 0;
-    margin: 0;
-    display: grid;
-    gap: clamp(1.25rem, 3vw, 1.75rem);
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .archive {
+    width: 100%;
     max-width: var(--measure);
+    border-collapse: collapse;
   }
 
-  .earlier__item {
-    border-left: 1px solid var(--color-rule);
-    padding-left: clamp(1rem, 3vw, 1.5rem);
+  .archive td {
+    border-bottom: 1px solid var(--color-rule);
+    padding: 0.9rem 1rem 0.9rem 0;
+    vertical-align: baseline;
   }
 
-  .earlier__role {
+  .archive tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .archive__role {
+    width: 60%;
+  }
+
+  .archive__title {
+    display: block;
+    font-family: var(--font-display);
     font-size: 1rem;
-    margin: 0;
+    line-height: 1.3;
   }
 
-  /* Same small uppercase label idiom as .case-card__stack and .eyebrow. */
-  .earlier__meta {
-    margin: 0.15rem 0 0.5rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--color-warm-grey);
-  }
-
-  .earlier__body {
-    margin: 0;
-    font-size: 0.9rem;
-    line-height: 1.6;
+  .archive__org {
+    display: block;
+    font-size: 0.85rem;
     color: var(--text);
-    opacity: 0.78;
+    opacity: 0.72;
+  }
+
+  /* One condensed line per role. Body face, not mono: this is prose, unlike
+     the date and tag columns beside it. */
+  .archive__summary {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: var(--text);
+    opacity: 0.66;
+    max-width: 52ch;
+  }
+
+  /* Monospace for the dates, as with the other metadata on the site. */
+  .archive__date {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--color-warm-grey);
+    white-space: nowrap;
+  }
+
+  .archive__tag {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--color-warm-grey);
+    text-align: right;
+    padding-right: 0;
+    white-space: nowrap;
+  }
+
+  /* The tag column is the first thing to go when there is no room for it. */
+  @media (max-width: 34rem) {
+    .archive__tag {
+      display: none;
+    }
   }
 
   .work-cta .lead {

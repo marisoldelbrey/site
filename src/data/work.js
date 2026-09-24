@@ -93,24 +93,27 @@ const gridStudies = caseStudies.filter((s) => !s.featured);
 export const earlierExperience = [
   {
     role: 'Healthcare Administration Intern',
+    kind: 'Internship',
     org: 'Kaiser Permanente',
     period: 'May–Aug 2025',
     description:
-      'Identified operational inefficiencies in member data workflows using Excel and SQL, informing patient-centered care improvements, and coordinated cross-functional project milestones.',
+      'Surfaced inefficiencies in member data workflows using Excel and SQL, and coordinated cross-functional project milestones.',
   },
   {
     role: 'ML/AI Fellow',
+    kind: 'Fellowship',
     org: 'Break Through Tech (UCLA/Cornell)',
     period: 'May 2023–Apr 2024',
     description:
-      'Selected from 1,500+ applicants for a competitive applied AI fellowship; built ML skills across Pandas, Scikit-Learn, and NumPy, and translated model outputs into stakeholder-facing reports.',
+      'Applied machine learning with Pandas, Scikit-Learn and NumPy, translating model output into stakeholder-facing reports.',
   },
   {
     role: 'Student Research Assistant',
+    kind: 'Research',
     org: 'Chapman Fowler School of Engineering',
     period: 'Jun–Dec 2023',
     description:
-      'Modeled California water budget scenarios from 1998-2019 and built a Tableau visualization projecting future supply and demand dynamics.',
+      'Modeled California water budget scenarios from 1998-2019 and visualized future supply and demand in Tableau.',
   },
 ];
 

@@ -41,11 +41,48 @@ const posts = (await getCollection('writing', ({ data }) => !data.draft)).sort(
       }
     </div>
   </section>
+
+  <section class="section elsewhere">
+    <div class="wrap">
+      <h2 class="eyebrow">From LinkedIn</h2>
+
+      <div class="embed">
+        <iframe
+          src="https://www.linkedin.com/embed/feed/update/urn:li:share:7509021978213793793?collapsed=1"
+          width="504"
+          height="359"
+          title="Embedded LinkedIn post"
+          loading="lazy"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </div>
+  </section>
 </BaseLayout>
 
 <style>
-  .post-list-section {
+  .post-list-section,
+  .elsewhere {
     border-top: 1px solid var(--color-rule);
+  }
+
+  /* The embed ships at a fixed 504x359. Capped at that natural width but free
+     to shrink below it, because 504px is wider than a 375px phone and a fixed
+     width would push the whole page into a horizontal scroll. The height stays
+     fixed: LinkedIn does not reflow the frame's contents, so a narrow panel
+     scrolls inside itself rather than being clipped. */
+  .embed {
+    max-width: 504px;
+  }
+
+  /* Replaces the deprecated frameborder attribute, and matches the rule and
+     radius used by the images elsewhere on the site. */
+  .embed iframe {
+    display: block;
+    width: 100%;
+    height: 359px;
+    border: 1px solid var(--color-rule);
+    border-radius: 2px;
   }
 
   .post-list {

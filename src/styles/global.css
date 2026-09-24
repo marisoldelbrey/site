@@ -25,6 +25,10 @@
   --color-status-production: #8f5a28;
   --color-status-progress: #9c5f09;
 
+  /* Sampled from a reference fabric swatch. Drives the homepage sidebar
+     nav's active and hover state, and nothing else. 12.65:1 on --bg. */
+  --color-burgundy: #4c1b23;
+
   /* Type */
   --font-display: 'Fraunces Variable', 'Fraunces', Georgia, 'Times New Roman',
     serif;
@@ -70,6 +74,11 @@
 
   --color-status-production: var(--accent);
   --color-status-progress: #e8a33d;
+
+  /* The swatch itself is 1.38:1 on this ground - invisible. This is the same
+     hue (350deg) and saturation lifted to the darkest lightness that still
+     clears the 4.5:1 AA floor: 4.62:1. One step down (#c25264) is 4.34. */
+  --color-burgundy: #c4596b;
 }
 
 /* ---------------------------------------------------------------------------

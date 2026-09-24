@@ -19,7 +19,11 @@ const { date } = Astro.props;
 
 <style>
   time {
-    font-size: 0.8rem;
+    /* Monospace, matching the other metadata on the site. Covers the writing
+       index, each post's published date and its "Updated" date, since they all
+       render this component. */
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
     font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;

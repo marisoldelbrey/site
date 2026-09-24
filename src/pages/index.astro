@@ -4,7 +4,6 @@ import {
   SITE_TITLE,
   SITE_DESCRIPTION,
   SITE_TITLE_DISPLAY,
-  NAV_LINKS,
   SOCIAL_LINKS,
 } from '../consts';
 import { caseStudies } from '../data/work.js';
@@ -71,8 +70,16 @@ const previews = caseStudies.slice(0, 3).map((study) => ({
   line: firstSentence(study.description),
 }));
 
-// The sidebar nav repeats the site nav minus Home, which is this page.
-const sidebarLinks = NAV_LINKS.filter((link) => link.href !== '/');
+// One source for the numbered sections: the sidebar nav and the headings
+// both read it, so a number cannot disagree between them. These are in-page
+// anchors, which is what the scroll-spy below tracks; the remaining site
+// pages stay reachable from the header nav on narrow screens and from the
+// footer everywhere.
+const sections = [
+  { num: '01', label: 'About', id: 'about' },
+  { num: '02', label: 'Impact', id: 'impact' },
+  { num: '03', label: 'Work', id: 'work' },
+];
 ---
 
 <BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
@@ -88,9 +95,12 @@ const sidebarLinks = NAV_LINKS.filter((link) => link.href !== '/');
         <nav class="home__nav" aria-label="Sections">
           <ul>
             {
-              sidebarLinks.map((link) => (
+              sections.map((section) => (
                 <li>
-                  <a href={link.href}>{link.label}</a>
+                  <a href={`#${section.id}`} data-spy-link={section.id}>
+                    <span class="home__nav-num">{section.num}.</span>
+                    <span class="home__nav-label">{section.label}</span>
+                  </a>
                 </li>
               ))
             }
@@ -142,29 +152,138 @@ const sidebarLinks = NAV_LINKS.filter((link) => link.href !== '/');
           </a>
         </li>
       </ul>
+
+      {/* Placeholder target: /resume.pdf is not in public/ yet, so this 404s
+          until the file is added. */}
+      <a class="home__resume" href="/resume.pdf">
+        <svg
+          width="13"
+          height="13"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M12 3v12M7 11l5 5 5-5M4 20h16" />
+        </svg>
+        Resume
+      </a>
+
+      {/* Scroll-spy. Marks whichever numbered section is crossing the middle of
+          the viewport, so exactly one nav item is ever active. Pure
+          IntersectionObserver, no scroll handler and no library.
+
+          This script sits inside the sidebar, which the parser reaches BEFORE
+          the sections it needs to observe, so it waits for the document rather
+          than running inline. Without the wait every getElementById returns
+          null, targets is empty, and the observer is never attached. */}
+      <script is:inline>
+        (() => {
+          const init = () => {
+          const links = Array.from(document.querySelectorAll('[data-spy-link]'));
+          if (!links.length || !('IntersectionObserver' in window)) return;
+
+          const targets = links
+            .map((link) => document.getElementById(link.dataset.spyLink))
+            .filter(Boolean);
+          if (!targets.length) return;
+
+          const visible = new Set();
+
+          const setActive = (id) => {
+            links.forEach((link) => {
+              const on = link.dataset.spyLink === id;
+              link.classList.toggle('is-active', on);
+              // aria-current, not just a class: the active item is a real
+              // position signal, not only a colour.
+              if (on) link.setAttribute('aria-current', 'true');
+              else link.removeAttribute('aria-current');
+            });
+          };
+
+          const update = () => {
+            if (!visible.size) return; // between bands: keep the last one lit
+            // Topmost section wins, so scrolling up and down agree.
+            const next = targets.find((el) => visible.has(el.id));
+            if (next) setActive(next.id);
+          };
+
+          const observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) visible.add(entry.target.id);
+                else visible.delete(entry.target.id);
+              });
+              update();
+            },
+            // A band across the middle of the viewport rather than the whole
+            // of it, so only one section qualifies at a time.
+            { rootMargin: '-45% 0px -45% 0px', threshold: 0 }
+          );
+
+          targets.forEach((el) => observer.observe(el));
+          setActive(targets[0].id);
+          };
+
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init, { once: true });
+          } else {
+            init();
+          }
+        })();
+      </script>
     </header>
 
     {/* Right column, scrolls normally. */}
     <div class="home__main">
       <section class="home__section" id="about" aria-labelledby="h-about">
         <h2 class="home__heading" id="h-about">
-          <span class="home__num">01.</span>
-          <span>About</span>
+          <span class="home__num">{sections[0].num}.</span>
+          <span>{sections[0].label}</span>
         </h2>
 
         <div class="home__prose">
           <p>
-            Reporting directly to the COO, I support C-suite leadership across
-            reporting, CRM, and process automation.
+            I studied philosophy because I wanted to understand how systems of
+            reasoning actually work, the logic underneath decisions, arguments,
+            and institutions. That same instinct turned out to apply just as
+            well to how organizations run.
           </p>
-          <p>I also direct associate-level support to scale delivery.</p>
+          <p>
+            I paired that with a CS minor at Chapman University, then spent a
+            year as an ML/AI Fellow through a competitive UCLA and Cornell
+            program, selected from over 1,500 applicants. I built applied
+            machine learning skills there, and learned how to translate complex
+            model output into something a non-technical stakeholder could
+            actually use and trust.
+          </p>
+          <p>
+            Before Talley, I came at the same underlying question from a few
+            different angles: how do you make complex systems legible and
+            accountable? That meant operational inefficiencies in healthcare
+            data workflows at Kaiser Permanente, a data-backed strategy that
+            placed in the top 0.05% at Accenture's Innovation Challenge, and
+            decades of California water data modeled as a research assistant at
+            Chapman's Fowler School of Engineering.
+          </p>
+          <p>
+            Now, as PMO Lead at Talley LLP, I bring all of that together.
+            Reporting directly to the COO, I build the reporting
+            infrastructure, CRM systems, and automation that a 100-person
+            professional services firm actually runs on, and I direct
+            associate-level support to help scale that delivery.
+          </p>
+          <p>Based in Orange County, California.</p>
         </div>
       </section>
 
       <section class="home__section" id="impact" aria-labelledby="h-impact">
         <h2 class="home__heading" id="h-impact">
-          <span class="home__num">02.</span>
-          <span>Impact</span>
+          <span class="home__num">{sections[1].num}.</span>
+          <span>{sections[1].label}</span>
         </h2>
 
         <ul class="stats__list" data-stats>
@@ -271,8 +390,8 @@ const sidebarLinks = NAV_LINKS.filter((link) => link.href !== '/');
 
       <section class="home__section" id="work" aria-labelledby="h-work">
         <h2 class="home__heading" id="h-work">
-          <span class="home__num">03.</span>
-          <span>Work</span>
+          <span class="home__num">{sections[2].num}.</span>
+          <span>{sections[2].label}</span>
         </h2>
 
         <p class="home__prose">
@@ -288,13 +407,43 @@ const sidebarLinks = NAV_LINKS.filter((link) => link.href !== '/');
                 <p class="preview__line">{project.line}</p>
                 <a class="preview__link" href="/work/">
                   View project
+                  <svg
+                    class="link-arrow"
+                    width="13"
+                    height="13"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
                 </a>
               </li>
             ))
           }
         </ul>
 
-        <a class="home__more" href="/work/">See all work</a>
+        <a class="home__more" href="/work/">
+          See all work
+          <svg
+            class="link-arrow"
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </a>
       </section>
     </div>
   </div>
@@ -317,34 +466,25 @@ const sidebarLinks = NAV_LINKS.filter((link) => link.href !== '/');
       align-items: start;
     }
 
+    /* Plain sticky at a static offset: it starts where it sits in the flow and
+       holds 2rem from the top once the page scrolls past it. No measured
+       heights and nothing computed. */
     .home__aside {
       position: sticky;
-      top: 0;
-      /* Fills the viewport so the icons can sit at the bottom of the column,
-         and scrolls internally if a short screen cannot hold it all. The
-         negative margin cancels the padding so the name still lines up with
-         the first section heading. */
-      max-height: 100vh;
-      padding-block: var(--space-section);
-      margin-block: calc(var(--space-section) * -1);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 2rem;
-      overflow-y: auto;
+      top: 2rem;
     }
   }
 
   /* ---- Sidebar -----------------------------------------------------------*/
   .home__name {
-    font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.4rem);
+    font-size: clamp(1.45rem, 1.15rem + 1.15vw, 2rem);
     line-height: 1.1;
     margin: 0 0 0.6rem;
   }
 
   .home__tagline {
     font-family: var(--font-body);
-    font-size: 1.05rem;
+    font-size: 0.88rem;
     line-height: 1.5;
     color: var(--text);
     opacity: 0.72;
@@ -375,6 +515,10 @@ const sidebarLinks = NAV_LINKS.filter((link) => link.href !== '/');
   }
 
   .home__nav a {
+    position: relative;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5rem;
     font-family: var(--font-body);
     font-size: 0.78rem;
     font-weight: 600;
@@ -385,9 +529,44 @@ const sidebarLinks = NAV_LINKS.filter((link) => link.href !== '/');
     transition: color 0.18s ease;
   }
 
+  /* Same mono face as the section header numbers. */
+  .home__nav-num {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    letter-spacing: 0.06em;
+  }
+
+  /* Grows from the left edge on hover and stays out while an item is active.
+     scaleX on a pseudo-element, so nothing reflows as it animates. */
+  .home__nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.4em;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.25s ease;
+  }
+
   .home__nav a:hover,
-  .home__nav a:focus-visible {
-    color: var(--accent);
+  .home__nav a:focus-visible,
+  .home__nav a.is-active {
+    color: var(--color-burgundy);
+  }
+
+  .home__nav a:hover::after,
+  .home__nav a:focus-visible::after,
+  .home__nav a.is-active::after {
+    transform: scaleX(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home__nav a::after {
+      transition: none;
+    }
   }
 
   .home__social {
@@ -396,12 +575,6 @@ const sidebarLinks = NAV_LINKS.filter((link) => link.href !== '/');
     margin: clamp(2rem, 5vw, 3rem) 0 0;
     display: flex;
     gap: 1.1rem;
-  }
-
-  @media (min-width: 64rem) {
-    .home__social {
-      margin-top: 0;
-    }
   }
 
   .home__social a {
@@ -466,11 +639,13 @@ const sidebarLinks = NAV_LINKS.filter((link) => link.href !== '/');
   .preview {
     background: var(--bg);
     padding: 1.25rem 0.75rem;
-    transition: background 0.18s ease;
+    border-left: 2px solid transparent;
+    transition: background 0.18s ease, border-color 0.18s ease;
   }
 
   .preview:hover {
     background: var(--color-surface);
+    border-left-color: var(--color-burgundy);
   }
 
   .preview__title {
@@ -488,8 +663,11 @@ const sidebarLinks = NAV_LINKS.filter((link) => link.href !== '/');
   }
 
   .preview__link,
-  .home__more {
-    display: inline-block;
+  .home__more,
+  .home__resume {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
     font-family: var(--font-body);
     font-size: 0.75rem;
     font-weight: 600;
@@ -503,6 +681,41 @@ const sidebarLinks = NAV_LINKS.filter((link) => link.href !== '/');
   .preview__link:focus-visible,
   .home__more:hover,
   .home__more:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 0.3em;
+  }
+
+  /* The arrow nudges right on hover. transform only, so nothing reflows. */
+  .link-arrow {
+    flex: none;
+    transition: transform 0.18s ease;
+  }
+
+  .preview:hover .link-arrow,
+  .preview__link:hover .link-arrow,
+  .preview__link:focus-visible .link-arrow,
+  .home__more:hover .link-arrow,
+  .home__more:focus-visible .link-arrow {
+    transform: translateX(3px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .link-arrow {
+      transition: none;
+    }
+  }
+
+  /* Sits under the social icons. Same small uppercase idiom as the links
+     above, in the accent so it reads as an action rather than a label. */
+  .home__resume {
+    margin-top: 1.1rem;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .home__resume:hover,
+  .home__resume:focus-visible {
+    color: var(--color-burgundy);
     text-decoration: underline;
     text-underline-offset: 0.3em;
   }
