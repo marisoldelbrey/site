@@ -9,7 +9,7 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 const stats = [
   {
     kind: 'count',
-    value: 27,
+    value: 36.1,
     prefix: '',
     suffix: '%',
     label: 'reduction in past-due AR following automation rollout',
@@ -37,8 +37,17 @@ const stats = [
   },
 ];
 
+// Stat values may carry decimals (36.1%), so every render of a value - the
+// server-rendered final one and each count-up frame - pins the same number of
+// fraction digits. Otherwise the tick would round to a whole number and land
+// on the wrong figure.
+const decimalsOf = (n) => (String(n).split('.')[1] || '').length;
+
 const formatStat = (s) =>
-  `${s.prefix}${s.value.toLocaleString('en-US')}${s.suffix}`;
+  `${s.prefix}${s.value.toLocaleString('en-US', {
+    minimumFractionDigits: decimalsOf(s.value),
+    maximumFractionDigits: decimalsOf(s.value),
+  })}${s.suffix}`;
 ---
 
 <BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
@@ -87,6 +96,7 @@ const formatStat = (s) =>
                 <p class="stat__value">
                   <span
                     data-count={stat.value}
+                    data-decimals={decimalsOf(stat.value)}
                     data-prefix={stat.prefix}
                     data-suffix={stat.suffix}
                   >
@@ -129,13 +139,18 @@ const formatStat = (s) =>
 
           const easeOut = (t) => 1 - Math.pow(1 - t, 3);
 
-          const countUp = (el, target, prefix, suffix, duration) => {
+          const countUp = (el, target, prefix, suffix, decimals, duration) => {
             const started = performance.now();
             const step = (now) => {
               const t = Math.min((now - started) / duration, 1);
-              const current = Math.round(target * easeOut(t));
+              const current = target * easeOut(t);
               el.textContent =
-                prefix + current.toLocaleString('en-US') + suffix;
+                prefix +
+                current.toLocaleString('en-US', {
+                  minimumFractionDigits: decimals,
+                  maximumFractionDigits: decimals,
+                }) +
+                suffix;
               if (t < 1) requestAnimationFrame(step);
             };
             requestAnimationFrame(step);
@@ -164,6 +179,7 @@ const formatStat = (s) =>
                 Number(num.dataset.count),
                 num.dataset.prefix || '',
                 num.dataset.suffix || '',
+                Number(num.dataset.decimals) || 0,
                 1000
               );
             }, wait);
