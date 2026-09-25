@@ -12,6 +12,8 @@
 export const caseStudies = [
   {
     title: 'Cellular Tower ML Model',
+    // Shown under the homepage preview, shorter than `stack`.
+    previewTags: ['Python', 'Scikit-Learn', 'Fairness in AI'],
     featured: true,
     status: 'production',
     label: 'Fairness in AI Award',
@@ -27,6 +29,8 @@ export const caseStudies = [
   },
   {
     title: 'Collections Process Automation',
+    // Shown under the homepage preview, shorter than `stack`.
+    previewTags: ['Python', 'Node', 'Supabase'],
     featured: true,
     status: 'production',
     label: 'Production',
@@ -42,6 +46,8 @@ export const caseStudies = [
   },
   {
     title: 'Client Wiki',
+    // Shown under the homepage preview, shorter than `stack`.
+    previewTags: ['Supabase', 'Dashboard Design'],
     status: 'progress',
     label: 'In Progress · Piloting',
     description:

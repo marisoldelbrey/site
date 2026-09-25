@@ -68,6 +68,7 @@ const firstSentence = (text) => {
 const previews = caseStudies.slice(0, 3).map((study) => ({
   title: study.title,
   line: firstSentence(study.description),
+  tags: study.previewTags ?? [],
 }));
 
 // One source for the numbered sections: the sidebar nav and the headings
@@ -219,9 +220,13 @@ const sections = [
               });
               update();
             },
-            // A band across the middle of the viewport rather than the whole
-            // of it, so only one section qualifies at a time.
-            { rootMargin: '-45% 0px -45% 0px', threshold: 0 }
+            // The band a section must touch to count as active. Trimming 20%
+            // off the top and bottom leaves the middle 60% of the viewport, so
+            // an item stays lit for most of the time its section is being read
+            // rather than blinking as the heading crosses a hairline. Sections
+            // overlap in a band this tall; update() keeps the topmost, so the
+            // highlight moves on only once the previous section has left.
+            { rootMargin: '-20% 0px -20% 0px', threshold: 0 }
           );
 
           targets.forEach((el) => observer.observe(el));
@@ -272,9 +277,9 @@ const sections = [
           <p>
             Now, as PMO Lead at Talley LLP, I bring all of that together.
             Reporting directly to the COO, I build the reporting
-            infrastructure, CRM systems, and automation that a 100-person
-            professional services firm actually runs on, and I direct
-            associate-level support to help scale that delivery.
+            infrastructure, CRM systems, and automation that a professional
+            services firm actually runs on, and I direct associate-level
+            support to help scale that delivery.
           </p>
           <p>Based in Orange County, California.</p>
         </div>
@@ -395,8 +400,7 @@ const sections = [
         </h2>
 
         <p class="home__prose">
-          Automation, reporting, and operations work for a 100+ person
-          professional services firm.
+          Automation, reporting, and operations work.
         </p>
 
         <ul class="preview-list">
@@ -405,6 +409,10 @@ const sections = [
               <li class="preview">
                 <h3 class="preview__title">{project.title}</h3>
                 <p class="preview__line">{project.line}</p>
+
+                {project.tags.length > 0 && (
+                  <p class="preview__tags">{project.tags.join(' · ')}</p>
+                )}
                 <a class="preview__link" href="/work/">
                   View project
                   <svg
@@ -426,6 +434,47 @@ const sections = [
             ))
           }
         </ul>
+
+        {/* Same arm-then-reveal pattern as the stat strip above: the markup
+            ships visible, and this only hides things once it has confirmed the
+            browser will animate them back in. */}
+        <script is:inline>
+          (() => {
+            const init = () => {
+              const items = Array.from(document.querySelectorAll('.preview'));
+              if (!items.length || !('IntersectionObserver' in window)) return;
+
+              // Reduced motion: leave the server-rendered final state alone.
+              if (
+                window.matchMedia('(prefers-reduced-motion: reduce)').matches
+              ) {
+                return;
+              }
+
+              items.forEach((el) => el.classList.add('is-armed'));
+
+              const observer = new IntersectionObserver(
+                (entries) => {
+                  entries.forEach((entry) => {
+                    if (!entry.isIntersecting) return;
+                    // Once per card, never again.
+                    observer.unobserve(entry.target);
+                    entry.target.classList.add('is-visible');
+                  });
+                },
+                { threshold: 0.2, rootMargin: '0px 0px -10% 0px' }
+              );
+
+              items.forEach((el) => observer.observe(el));
+            };
+
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', init, { once: true });
+            } else {
+              init();
+            }
+          })();
+        </script>
 
         <a class="home__more" href="/work/">
           See all work
@@ -648,9 +697,45 @@ const sections = [
     border-left-color: var(--color-burgundy);
   }
 
+  /* ---- Preview entrance --------------------------------------------------
+     .is-armed is added by the script above, so with JS off (or reduced motion)
+     these rules never apply and the final state is what renders. */
+  .preview.is-armed {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  /* The longhand keeps the hover transitions alive alongside the entrance one:
+     a shorthand here would replace them, and a blanket transition-delay would
+     also lag the hover wash by the stagger amount. */
+  .preview.is-visible {
+    opacity: 1;
+    transform: none;
+    transition-property: opacity, transform, background, border-color;
+    transition-duration: 0.6s, 0.6s, 0.18s, 0.18s;
+    transition-timing-function: ease;
+  }
+
+  .preview:nth-child(2).is-visible {
+    transition-delay: 0.09s, 0.09s, 0s, 0s;
+  }
+
+  .preview:nth-child(3).is-visible {
+    transition-delay: 0.18s, 0.18s, 0s, 0s;
+  }
+
   .preview__title {
     font-size: 1.05rem;
     margin: 0 0 0.35rem;
+  }
+
+  /* Short skill tags, monospace like the other metadata on the site. */
+  .preview__tags {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
+    color: var(--color-warm-grey);
   }
 
   .preview__line {

@@ -11,14 +11,14 @@
 
   /* Theme palette */
   --bg: #f6f2ec;
-  --text: #16202e;
-  --accent: #b4763b;
+  --text: #241417;
+  --accent: #6e1f2b;
 
   /* Supporting tones, derived from the palette above */
-  --color-warm-grey: #8c8579;
+  --color-warm-grey: #7a6862;
   --color-rule: rgba(140, 133, 121, 0.28);
-  --color-surface: #fffdfa;
-  --color-accent-soft: rgba(180, 118, 59, 0.1);
+  --color-surface: #fffaf7;
+  --color-accent-soft: rgba(110, 31, 43, 0.08);
 
   /* Status colors for the work-page badges. Darkened from the accent and from
      plain orange so 0.75rem badge text clears WCAG AA on --bg. */
@@ -64,13 +64,13 @@
   color-scheme: dark;
 
   --bg: #0d0d0c;
-  --text: #f0ede6;
-  --accent: #c9b896;
+  --text: #f5ece9;
+  --accent: #c4596b;
 
-  --color-warm-grey: #9b9384;
+  --color-warm-grey: #a89490;
   --color-rule: rgba(240, 237, 230, 0.15);
-  --color-surface: #161614;
-  --color-accent-soft: rgba(201, 184, 150, 0.14);
+  --color-surface: #1c1214;
+  --color-accent-soft: rgba(196, 89, 107, 0.12);
 
   --color-status-production: var(--accent);
   --color-status-progress: #e8a33d;
