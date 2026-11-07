@@ -13,57 +13,46 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         I build the infrastructure that makes a professional services firm run.
       </h1>
 
-      <div class="about__intro">
-        <figure class="about__portrait">
-          <img
-            src="/images/marisol.jpg"
-            alt="Marisol Delbrey"
-            width="1024"
-            height="1280"
-          />
-        </figure>
+      <div class="prose stack">
+        <p>
+          I studied philosophy because I wanted to understand how systems of
+          reasoning actually work, the logic underneath decisions, arguments,
+          and institutions. It turned out that same instinct applies just as
+          well to how organizations run.
+        </p>
 
-        <div class="prose stack">
-          <p>
-            I studied philosophy because I wanted to understand how systems of
-            reasoning actually work, the logic underneath decisions, arguments,
-            and institutions. It turned out that same instinct applies just as
-            well to how organizations run.
-          </p>
+        <p>
+          I paired that with a CS minor at Chapman University, then spent a
+          year as an ML/AI Fellow through a competitive UCLA and Cornell
+          program, selected from over 1,500 applicants. I built applied
+          machine learning skills there, working with Pandas, Scikit-Learn,
+          and NumPy, and learned how to translate complex model outputs into
+          something a non-technical stakeholder could actually use and trust.
+        </p>
 
-          <p>
-            I paired that with a CS minor at Chapman University, then spent a
-            year as an ML/AI Fellow through a competitive UCLA and Cornell
-            program, selected from over 1,500 applicants. I built applied
-            machine learning skills there, working with Pandas, Scikit-Learn,
-            and NumPy, and learned how to translate complex model outputs into
-            something a non-technical stakeholder could actually use and trust.
-          </p>
+        <p>
+          Before Talley, I worked across a few different lenses on the same
+          underlying question: how do you make complex systems legible and
+          accountable? At Kaiser Permanente, that meant identifying
+          operational inefficiencies in healthcare data workflows. At
+          Accenture, it meant developing a data-backed strategy that placed in
+          the top 0.05% of applicants to their Innovation Challenge. As a
+          research assistant at Chapman's Fowler School of Engineering, it
+          meant modeling California's water budget data to visualize decades
+          of supply and demand.
+        </p>
 
-          <p>
-            Before Talley, I worked across a few different lenses on the same
-            underlying question: how do you make complex systems legible and
-            accountable? At Kaiser Permanente, that meant identifying
-            operational inefficiencies in healthcare data workflows. At
-            Accenture, it meant developing a data-backed strategy that placed in
-            the top 0.05% of applicants to their Innovation Challenge. As a
-            research assistant at Chapman's Fowler School of Engineering, it
-            meant modeling California's water budget data to visualize decades
-            of supply and demand.
-          </p>
+        <p>
+          Now, as PMO Lead at Talley LLP, I bring all of that together.
+          Reporting directly to the COO, I build the reporting infrastructure,
+          CRM systems, and automation that a professional services firm
+          actually runs on, and I direct associate-level support to help
+          scale that delivery. The work is different in scale from anything I
+          did before, but the underlying question hasn't changed: how do you
+          build something people can trust and actually use.
+        </p>
 
-          <p>
-            Now, as PMO Lead at Talley LLP, I bring all of that together.
-            Reporting directly to the COO, I build the reporting infrastructure,
-            CRM systems, and automation that a professional services firm
-            actually runs on, and I direct associate-level support to help
-            scale that delivery. The work is different in scale from anything I
-            did before, but the underlying question hasn't changed: how do you
-            build something people can trust and actually use.
-          </p>
-
-          <p>Outside of work, I'm based in Orange County, California.</p>
-        </div>
+        <p>Outside of work, I'm based in Orange County, California.</p>
       </div>
     </div>
   </section>
@@ -107,38 +96,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 </BaseLayout>
 
 <style>
-  /* Portrait sits under the heading on phones and beside the copy on desktop.
-     It is first in the DOM so it stays next to the heading when stacked. */
-  .about__intro {
-    display: grid;
-    gap: clamp(1.5rem, 4vw, 3rem);
-    align-items: start;
-  }
-
-  @media (min-width: 52rem) {
-    .about__intro {
-      grid-template-columns: 1fr 0.6fr;
-    }
-
-    .about__portrait {
-      grid-column: 2;
-      grid-row: 1;
-    }
-  }
-
-  .about__portrait {
-    margin: 0;
-  }
-
-  /* Landscape source cropped to portrait; matches the hero framing. */
-  .about__portrait img {
-    width: 100%;
-    aspect-ratio: 4 / 5;
-    object-fit: cover;
-    object-position: 47% 35%;
-    border-radius: 2px;
-  }
-
   .about-details,
   .about-cta {
     border-top: 1px solid var(--color-rule);
